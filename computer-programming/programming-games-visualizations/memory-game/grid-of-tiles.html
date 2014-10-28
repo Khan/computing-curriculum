@@ -1,2 +1,172 @@
-<!-- khanid:x596b3048 -->
+<p>The first step of playing the &quot;Memory&quot; game is to randomly shuffle all the tiles, and then lay them out in a rectangular grid, face down so that we can&#39;t see which image is on the other side of each tile.</p>
 
+<h2>Face-down tiles</h2>
+
+<p>To start off in programming the game, let&#39;s just worry about creating face-down tiles, and figure out how to do the different images later.</p>
+
+<p>The &quot;tile&quot; is an important enough object in the game of &quot;Memory&quot; that we will use <a href="https://www.khanacademy.org/cs/programming/object-oriented/p/object-types">object-oriented principles</a> to define a <code>Tile</code> object and then create multiple instances of it. Then we&#39;ll be able associate both properties (like location and image) as well as behavior (like turning face down or up) with each of the <code>Tile</code>s.</p>
+
+<p>To start off, we&#39;ll define the <code>Tile</code> constructor function. Since we&#39;re not dealing with the images yet, we&#39;ll just pass <code>x</code> and <code>y</code> arguments to it. We&#39;ll also remember the tile width (a constant) in a property on the object.</p>
+
+<pre>
+<code>var Tile = function(x, y) {
+    this.x = x;
+    this.y = y;
+    this.width = 70;
+};</code></pre>
+
+<p>Now that we&#39;ve defined the constructor, we can use that in a loop to create tiles at appropriate x and y positions. In fact, we&#39;ll use two for loops - a nested for loop - as that makes it conceptually easy to generate coordinates for a grid.</p>
+
+<p>We start off by initializing an empty <code>tiles</code> array:</p>
+
+<pre>
+<code>var tiles = [];</code></pre>
+
+<p>Our outer loop iterates for as many columns as we want, our inner loop iterates for each of the rows, and each new <code>Tile</code> is initialized with an x and y that corresponds to that row and column.</p>
+
+<pre>
+<code>var NUM_COLS = 5;
+var NUM_ROWS = 4;
+for (var i = 0; i &lt; NUM_COLS; i++) {
+    for (var j = 0; j &lt; NUM_ROWS; j++) {
+        tiles.push(new Tile(i * 78 + 10, j * 78 + 40));
+    }
+}</code></pre>
+
+<p>But, uh, it&#39;s hard to know if the tiles will look good, because we don&#39;t have any code to draw them yet! In fact, maybe we should have done that first. Sometimes, in programming, it&#39;s hard to know what to do first, aye? Let&#39;s now add a method to the <code>Tile</code> object that draws a tile face-down on the canvas. We&#39;ll draw a rounded rectangle with a cute Khan leaf on top, at the assigned location.</p>
+
+<pre>
+<code>Tile.prototype.drawFaceDown = function() {
+    fill(214, 247, 202);
+    strokeWeight(2);
+    rect(this.x, this.y, this.width, this.width, 10);
+    image(getImage(&quot;avatars/leaf-green&quot;), this.x, this.y, this.width, this.width);
+};</code></pre>
+
+<p>And <strong>now</strong> we can check how our tiles look. Let&#39;s add a new for loop that iterates through all the tiles and calls the drawing method on them:</p>
+
+<pre>
+<code>for (var i = 0; i &lt; tiles.length; i++) {
+    tiles[i].drawFaceDown();
+}</code></pre>
+
+<p>Here&#39;s what our program looks like, with all that code. Try tweaking the different numbers in the nested for loop to see how it changes the grid or changing how they&#39;re drawn (different logo, perhaps?)</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/memory-game-tiles-face-down/5419067223572480/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<h3>Face-up tiles</h3>
+
+<p>Now that we&#39;ve got a grid of face-down tiles, let&#39;s tackle a bit of a trickier problem: assigning each of them an image, such that there&#39;s 2 of every image in the array, randomly distributed throughout. There are likely many ways we could accomplish this, but here&#39;s what I&#39;d suggest:</p>
+
+<ol>
+	<li>We create an array of the possible images, using the <code>getImage</code> function to pick ones from our library.</li>
+	<li>We&#39;ll only need 10 images for the faces of our 20 tiles, so then we create a new array that holds 2 copies of 10 randomly selected images from that first array.</li>
+	<li>We randomize the selected images array, so that the pairs of images are no longer next to eachother in an array.</li>
+	<li>In the nested for loop where we create the tiles, we&#39;ll assign an image from that array to each tile.</li>
+</ol>
+
+<p>Those steps may not make sense yet - let&#39;s do them each and see what they look like.</p>
+
+<p><strong>Step 1:</strong> We create an array of the possible images, using the <code>getImage</code> function to pick ones from our library:</p>
+
+<pre>
+<code>var faces = [
+    getImage(&quot;avatars/leafers-seed&quot;),
+    getImage(&quot;avatars/leafers-seedling&quot;),
+    getImage(&quot;avatars/leafers-sapling&quot;),
+    getImage(&quot;avatars/leafers-tree&quot;),
+    getImage(&quot;avatars/leafers-ultimate&quot;),
+    getImage(&quot;avatars/marcimus&quot;),
+    getImage(&quot;avatars/mr-pants&quot;),
+    getImage(&quot;avatars/mr-pink&quot;),
+    getImage(&quot;avatars/old-spice-man&quot;),
+    getImage(&quot;avatars/robot_female_1&quot;),
+    getImage(&quot;avatars/piceratops-tree&quot;),
+    getImage(&quot;avatars/orange-juice-squid&quot;)
+];</code></pre>
+
+<p>I picked a bunch of avatars, but you could change it to pick whatever your favorite images are. The important thing is to make sure that this array has at least 10 images in it, so that we don&#39;t run out of images for our 20 tiles. We can add lots more than 10 images though, to give our game more variety each time its played, because we&#39;ll narrow down the list in the next step.</p>
+
+<p>&nbsp;</p>
+
+<p><strong>Step 2:</strong> We&#39;ll only need 10 images for the faces of our 20 tiles, so then we create a new array that holds 2 copies of 10 randomly selected images from that first array.</p>
+
+<p>To do that, we create a for loop that iterates 10 times. In each iteration, we randomly pick an index from the <code>faces</code> array, push that twice onto the <code>selected</code> array, and then use the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice">splice</a> method&nbsp;remove it from the <code>faces</code> array, so that we don&#39;t select it twice. That last step is very important!</p>
+
+<pre>
+<code>var selected = [];
+for (var i = 0; i &lt; 10; i++) {
+    // Randomly pick one from the array of faces
+    var randomInd = floor(random(faces.length));
+    var face = faces[randomInd];
+    // Push 2 copies onto array
+    selected.push(face);
+    selected.push(face);
+    // Remove from faces array so we don&#39;t re-pick
+    faces.splice(randomInd, 1);
+}</code></pre>
+
+<p><strong>Step 3:</strong> We randomize the selected images array, so that the pairs of images are no longer next to eachother in an array.</p>
+
+<p>You might be wondering, how does one randomly sort an array in JavaScript? There are a few techniques, but I&#39;ll show you my favorite.</p>
+
+<p>In JavaScript, every array object has a built-in <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort"><code>sort</code></a> method that will sort the array &quot;lexicographically&quot;. That means that it will convert each item to a string, and sort them as if they were words in a dictionary. For example, let&#39;s see how it&#39;d sort an array of numbers and letters:</p>
+
+<pre>
+<code>var items = [&quot;A&quot;, 1, &quot;C&quot;, &quot;H&quot;, 10, &quot;D&quot;, 2];
+items.sort();
+1,10,2,A,C,D,H</code></pre>
+
+<p>That sorting order can sometimes be useful, but most of the time, we want to sort our array in some other way. For example, if we had an array of numbers, we may want to sort them numerically. That&#39;s why the <code>sort</code> method optionally accepts an argument, a callback function that will get called on every pair of items in an array, and return a value to indicate whether to sort one item higher than the other. A negative number means that the first item should be first, a positive number means that the second item should be first, and a zero will leave the items&#39; order unchanged.</p>
+
+<p>To sort an array numerically from lowest to highest, we can pass a function that returns <code>a-b</code>.</p>
+
+<pre>
+<code>var nums = [1, 5, 10, 2, 4];
+nums.sort(function(a, b) {
+   return  a-b;
+});
+// 1,2,4,5,10</code></pre>
+
+<p>Okay, so how can we use this to sort an array randomly? Well, we just need to return a random number from that function, a number that&#39;s either negative or positive. Here&#39;s how we can do that, on our <code>selected</code> array from above:</p>
+
+<pre>
+<code>selected.sort(function() {
+    return 0.5 - random();
+});</code></pre>
+
+<p>And now we have an array of 10 pairs of images, randomly sorted!</p>
+
+<p><strong>Step 4:</strong> In the nested for loop where we create the tiles, we&#39;ll assign an image from that array to each tile.</p>
+
+<p>We have 20 images in our <code>selected</code> array, and we&#39;re iterating 20 times to instantiate new tiles at locations in the grid. To assign each image to a tile, we can just use the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop"><code>pop</code></a> method on the array. That method removes the last element from the array and returns it, and is the easiest way to make sure we assign all the images but don&#39;t double assign them.</p>
+
+<pre>
+<code>for (var i = 0; i &lt; NUM_COLS; i++) {
+    for (var j = 0; j &lt; NUM_ROWS; j++) {
+        tiles.push(new Tile(i * 78 + 10, j * 78 + 40, selected.pop()));
+    }
+}</code></pre>
+
+<p>So we now theoretically have images assigned to each tile, but we&#39;re not displaying them yet! Let&#39;s add a method to the <code>Tile</code> object that&#39;s responsible for drawing them face up. It&#39;ll be similar to drawing face down, but the <code>image</code> command use the <code>this.image</code> property instead.</p>
+
+<pre>
+<code>Tile.prototype.drawFaceUp = function() {
+    fill(214, 247, 202);
+    strokeWeight(2);
+    rect(this.x, this.y, this.width, this.width, 10);
+    image(this.face, this.x, this.y, this.width, this.width);
+};</code></pre>
+
+<p>To reduce repeated code, we could actually add an additional method that is only responsible for drawing the outline, and just call that method from each of the drawing methods. But we&#39;ll leave it like this for now.</p>
+
+<p>Finally, to test it all works, we can change our for loop to call <code>drawFaceUp</code> instead of <code>drawFaceDown</code>:</p>
+
+<pre>
+<code>for (var i = 0; i &lt; tiles.length; i++) {
+    tiles[i].drawFaceUp();
+}</code></pre>
+
+<p>Here it is, all together. Try restarting it to see how the tiles change each time.</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/memory-game-tiles-face-up/5165821053632512/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
