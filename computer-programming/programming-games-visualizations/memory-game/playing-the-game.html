@@ -1,2 +1,241 @@
-<!-- khanid:x608a6d79 -->
+<p>Okay, so we now have a grid of tiles that we can display face up or face down. But we have no way of actually playing the game. To remind you, here&#39;s how the game works:</p>
 
+<ul>
+	<li>When the game starts, all tiles are turned face down.</li>
+	<li>The player then flips over two cards, selecting them by clicking on them.</li>
+	<li>If the two tiles have the same image, they remain face up. If not, they should be flipped face down again after a short delay.</li>
+</ul>
+
+<h3>Click-flipping tiles</h3>
+
+<p>We&#39;ll start by turning our tiles all face down again:</p>
+
+<pre>
+<code>for (var i = 0; i &lt; tiles.length; i++) {
+    tiles[i].drawFaceDown();
+}</code></pre>
+
+<p>To flip a tile, the player must click on it. To respond to clicking in ProcessingJS programs, we can define a <code>mouseClicked</code> function, and that code will be executed every time the mouse is clicked.</p>
+
+<pre>
+<code>mouseClicked = function() {
+  // process click somehow
+};</code></pre>
+
+<p>When our program sees that the player has clicked somewhere, we want to check if they&#39;ve clicked on a tile, using <code>mouseX</code> and <code>mouseY</code>. Let&#39;s start by adding a <code>isUnderMouse</code> method to <code>Tile</code> that returns true if a given x and y is within a tile&#39;s area. With the way we&#39;ve drawn the tiles, the x and y of the tile correspond to the upper left corner of the tile, so we should return true only if the given x is between <code>this.x</code> and <code>this.x + this.width</code>, and if the given y is between <code>this.y</code> and <code>this.y + this.width</code>:</p>
+
+<pre>
+<code>Tile.prototype.isUnderMouse = function(x, y) {
+    return x &gt;= this.x &amp;&amp; x &lt;= this.x + this.width  &amp;&amp;
+        y &gt;= this.y &amp;&amp; y &lt;= this.y + this.width;
+};</code></pre>
+
+<p>Now that we have that method, we can use a for loop in <code>mouseClicked</code> to check if each tile is under the <code>mouseX</code> and <code>mouseY</code>. If so, we&#39;ll draw them face up:</p>
+
+<pre>
+<code>mouseClicked = function() {
+    for (var i = 0; i &lt; tiles.length; i++) {
+        if (tiles[i].isUnderMouse(mouseX, mouseY)) {
+            tiles[i].drawFaceUp();
+        }
+    }
+};</code></pre>
+
+<p>Here&#39;s what that looks like. Click a bunch of tiles and see what happens:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/memory-game-mouse-interaction/4772376883494912/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe><span>Notice something? We implemented one aspect of game play, the player be able to flip over the tiles, but we&#39;re missing an important restriction: </span><em>they shouldn&#39;t be able to flip more than two tiles at once</em><span>.</span></p>
+
+<p>We will need to keep track of the number of flipped tiles somehow. One simple way would be a global <code>numFlipped</code> variable that we increment each time the player turns a card face up. We could then skip the tile hit check if <code>numFlipped</code> is 2.</p>
+
+<pre>
+<code>var numFlipped = 0;
+mouseClicked = function() {
+    for (var i = 0; i &lt; tiles.length; i++) {
+        if (tiles[i].isUnderMouse(mouseX, mouseY)) {
+            if (numFlipped &lt; 2) {
+              tiles[i].drawFaceUp();
+              numFlipped++;
+            }
+        }
+    }
+};</code></pre>
+
+<p>That&#39;s not quite right, however - with that code, what would happen if we clicked on the same tile twice in a row? Think about it - it would flip it &quot;twice&quot;, set <code>numFlipped</code> to 2, and prevent future flips. Instead, we only want it to flip the card if it hasn&#39;t already been turned face up.</p>
+
+<p>How do we know if the current tile in the for loop is face up or down? We might have called the <code>drawFaceUp</code> method on it at some point before, but we never kept track of that. Ba ba bum, it&#39;s time for a boolean! Let&#39;s modify the draw methods to set a boolean that tells us the state of a tile.</p>
+
+<pre>
+<code>Tile.prototype.drawFaceDown = function() {
+    // ...
+    this.isFaceUp = false;
+};
+
+Tile.prototype.drawFaceUp = function() {
+    // ...
+    this.isFaceUp = true;
+};</code></pre>
+
+<p>Now we can modify the check to make sure the tile is actually face down:</p>
+
+<pre>
+<code>if (tiles[i].isUnderMouse(mouseX, mouseY)) {
+            if (numFlipped &lt; 2 &amp;&amp; !tiles[i].isFaceUp) {
+              tiles[i].drawFaceUp();
+              numFlipped++;
+            }
+        }</code></pre>
+
+<h3>&nbsp;</h3>
+
+<h3>Delay-flipping tiles</h3>
+
+<p>Okay, our two-tile-flipping logic is complete. What&#39;s next? Let&#39;s recap the game rules again:</p>
+
+<p><strong>If the two tiles have the same image, they remain face up. Otherwise, the tiles flip back over after some period of time.</strong></p>
+
+<p>We&#39;ll first implement the second part, which automatically flips the tiles back over, because it will be hard to test the first part if we can&#39;t easily look for new matches.</p>
+
+<p>We know how to flip tiles back over, using the <code>turnFaceDown</code> method, but how do we do that <em>after some period of time</em>? Every language and environment has a different approach to delaying execution of code, and we need to figure out how to do it in ProcessingJS. We need some way of keeping track of time - whether the delay period has passed - and a way of calling code after the period of time has passed. Here&#39;s what I&#39;d suggest:</p>
+
+<ul>
+	<li>We create a global variable called <code>delayStartFC</code>, initially null.</li>
+	<li>In the <code>mouseClicked</code> function, right after we&#39;ve flipped over a second tile, we store the current value of <code>frameCount</code> in <code>delayStartFC</code>. That variable tells us how many frames have passed since the program started running, and is one way of telling time in our programs.</li>
+	<li>We define the <code>draw</code> function, as that function will be called continuously as the program runs, so we know it will be called for every value of frameCount. In that function, we check if the new value of <code>frameCount</code> is significantly higher than the old one, and if so, we flip all of the tiles over and set <code>numFlipped</code> to 0. We also reset <code>delayStartFC</code> to null.</li>
+</ul>
+
+<p>It&#39;s actually a nice&nbsp;solution that doesn&#39;t require too much code to implement. As a performance optimization, we can use the <code>loop</code> and <code>noLoop</code> functions to make sure that the draw code is only being called when there&#39;s a delay happening. Here it all is:</p>
+
+<pre>
+<code>var numFlipped = 0;
+<strong>var delayStartFC = null;</strong>
+
+mouseClicked = function() {
+    for (var i = 0; i &lt; tiles.length; i++) {
+        if (tiles[i].isUnderMouse(mouseX, mouseY)) {
+            if (numFlipped &lt; 2 &amp;&amp; !tiles[i].isFaceUp) {
+                tiles[i].drawFaceUp();
+                numFlipped++;
+                <strong>if (numFlipped === 2) {
+                    delayStartFC = frameCount;
+                    loop();
+                }</strong>
+            } 
+        }
+    }
+};
+
+<strong>draw = function() {
+    if (delayStartFC &amp;&amp; (frameCount - delayStartFC) &gt; 30) {
+        for (var i = 0; i &lt; tiles.length; i++) {
+            tiles[i].drawFaceDown();
+        }
+        numFlipped = 0;
+        delayStartFC = null;
+        noLoop();
+    }
+};</strong></code></pre>
+
+<p>Try it out below - it&#39;s pretty cool how the tiles automatically flip back over, aye?</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/memory-game-flipping-logic/5110157270843392/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p><span>But we don&#39;t always want the tiles to flip back over - remember, <strong>if two tiles match, then they should stay face up</strong>. That means that we should check for matching tiles whenever there are 2 flipped over, and </span><strong>before</strong><span> we set up the delay. In pseudo-code, that&#39;d be:</span></p>
+
+<pre>
+if there are two tiles flipped over:
+    if the first tile has the same face as the second tile:
+       keep the tiles face up</pre>
+
+<p>We already have a check for whether there are two tiles flipped over (<code>numFlipped === 2</code>), so how do we check if the tiles have the same face? First, we need some way of accessing the two flipped over tiles. We could iterate through our array, find all the tiles with <code>isFaceUp</code> set to true, and then store those into an array. Or, I have a better idea: let&#39;s just always store our flipped tiles in an array, for easy access. In fact, we can just replace <code>numFlipped</code> with an array, and then use <code>flippedTiles.length</code> everywhere we previously used <code>numFlipped</code>.</p>
+
+<p>Our modified <code>mouseClick</code> function looks like this:</p>
+
+<pre>
+<code><strong>var flippedTiles = [];</strong>
+var delayStartFC = null;
+
+mouseClicked = function() {
+    for (var i = 0; i &lt; tiles.length; i++) {
+        if (tiles[i].isUnderMouse(mouseX, mouseY)) {
+            <strong>if (flippedTiles.length &lt; 2 &amp;&amp; !tiles[i].isFaceUp) {</strong>
+                tiles[i].drawFaceUp();
+                <strong>flippedTiles.push(tiles[i]);</strong>
+                <strong>if (flippedTiles.length === 2) {</strong>
+                    delayStartFC = frameCount;
+                    loop();
+                }
+            } 
+        }
+    }
+};</code></pre>
+
+<p>Now, we need to figure out if the two tiles in the <code>flippedTiles</code> array do indeed have the same face. Well, what is the <code>face</code> property? It&#39;s an object - and actually, the face of matching tiles should be exactly the same object, as in, the variable is pointing at the same place in computer memory for both. That&#39;s because we only created each image object once (like with <code>getImage(&quot;avatars/old-spice-man&quot;)</code> and then we pushed the same image object onto the faces array twice:</p>
+
+<pre>
+<code>var face = possibleFaces[randomInd];
+    selected.push(face);
+    selected.push(face);</code></pre>
+
+<p>In JavaScript at least, the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comparison_Operators">equality operator</a> will return true if it&#39;s used on two variables that point to objects, and both of those variables refer to the same object in memory. That means that our check can be simple - just use the equality operator on the <code>face</code> property of each tile:</p>
+
+<pre>
+<code>if (flippedTiles[0].face === flippedTiles[1].face) {
+  // ...
+  }</code></pre>
+
+<p>Now that we know the tiles match, we need to keep them up. Currently, they&#39;d all get turned over after a delay. We could just not set up the animation in this case, but remember, there will be an animation in later turns - so we can&#39;t rely on that. Instead, we need a way of knowing &quot;hey, when we turn all them back over, we shouldn&#39;t turn these particular ones over.&quot; Sounds like another good use for a boolean property! We could set a <code>isMatch</code> property to true inside that if block, and then only turn tiles over if it&#39;s not true:</p>
+
+<pre>
+<code>if (flippedTiles[0].face === flippedTiles[1].face) {
+    flippedTiles[0].isMatch = true;
+    flippedTiles[1].isMatch = true;
+}</code></pre>
+
+<pre>
+<code>for (var i = 0; i &lt; tiles.length; i++) {
+    if (!tiles[i].isMatch) {
+        tiles[i].drawFaceDown();
+    }
+}</code></pre>
+
+<p>Now, when you find two matching tiles below, they should stay up after the delay (and after future turns):</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/memory-game-match-checking/6351135667388416/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>&nbsp;</p>
+
+<h3>Scoring</h3>
+
+<p>We&#39;re only missing one thing now: the scoring. Here&#39;s a reminder of that part of the game rules:</p>
+
+<p><strong>The goal of the game is to get all the tiles flipped face up (i.e., find all the matching image pairs) in the least number of tries. That means that lower number of tries are better scores.</strong></p>
+
+<p>How do we track the number of tries? Well, a &quot;try&quot; is every time you&#39;ve flipped over two tiles, which corresponds to our if block that checks <code>flippedTiles.length === 2</code>. We can add a new global variable, <code>numTries</code>, that we increment inside that conditional.</p>
+
+<pre>
+<code>if (flippedTiles.length === 2) {
+                    numTries++;
+                    // ...
+               }</code></pre>
+
+<p>We can display the score when the game is over- when the player has matched all of the tiles. How do we check that? Well, we have an array of all our tiles, and each has a boolean that tells us if they&#39;re matches, so we can just loop through that and check if all of them are true. A neat way to accomplish this in code is to initialize a boolean to true before looping, and keep ANDing it with the boolean on each looped item. As long as it never sees a false (and the array is more than 0 items long!), it will still be true at the end. Here&#39;s what that looks like:</p>
+
+<pre>
+<code>var foundAllMatches = true;
+    for (var i = 0; i &lt; tiles.length; i++) {
+        foundAllMatches = foundAllMatches &amp;&amp; tiles[i].isMatch;
+    }</code></pre>
+
+<p>When we&#39;ve found all of them, we can display some congratulatory text to the user with the number of tries, like so:</p>
+
+<pre>
+<code>if (foundAllMatches) {
+    fill(0, 0, 0);
+    text(&quot;You found them all in &quot; + numTries + &quot; tries&quot;, 20, 360);
+}</code></pre>
+
+<p>We&#39;ll put all that code at the end of our <code>mouseClicked</code> function by the way, so that we run it after we&#39;ve checked for matches in that turn.</p>
+
+<p>You can try it out below, but it might take you a while to get to the win state (no offense to you, of course, it also takes me a while!). Here&#39;s a tip for whenever you&#39;re testing out parts of your game that are hard to reach - modify your game temporarily so that it&#39;s quicker to get there. For example, in this game, change <code>NUM_ROWS</code> and <code>NUM_COLS</code> to be smaller numbers, and you&#39;ll be able to finish much more quickly. Now, try *that* below!</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/memory-game-scoring/5447543729160192/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
