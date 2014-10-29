@@ -149,7 +149,7 @@ nums.sort(function(a, b) {
     }
 }</code></pre>
 
-<p>So we now theoretically have images assigned to each tile, but we&#39;re not displaying them yet! Let&#39;s add a method to the <code>Tile</code> object that&#39;s responsible for drawing them face up. It&#39;ll be similar to drawing face down, but the <code>image</code> command use the <code>this.image</code> property instead.</p>
+<p>So we now theoretically have images assigned to each tile, but we&#39;re not displaying them yet! Let&#39;s add a method to the <code>Tile</code> object that&#39;s responsible for drawing them face up. It&#39;ll be similar to drawing face down, except that the <code>this.face</code> property is passed to the <code>image</code> function.</p>
 
 <pre>
 <code>Tile.prototype.drawFaceUp = function() {
