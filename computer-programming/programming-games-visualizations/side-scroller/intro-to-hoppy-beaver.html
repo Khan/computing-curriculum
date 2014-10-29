@@ -1,0 +1,17 @@
+<!-- khanid:x49beb8f2 --> 
+ <p>We&#39;re going to create a game called Hoppy Beaver. It&#39;s a lot like a game you may have heard of, Flappy Bird, but it&#39;s got a few differences too. In this game, the user can control a beaver, making it hop up, so that it can grab sticks to make its den. Here&#39;s what it looks like to play:</p>
+
+<p><span class="block-image image-wrapper"><img alt="" src="https://ka-perseus-images.s3.amazonaws.com/3b60c165678e4ec51450747223e5c2a1fb6aa061.gif" style="width:432px" /></span></p>
+
+<p>Let&#39;s walk through how we might make this game, step by step.</p>
+
+<p>First, let&#39;s think about the different components of the game - what we might find in many games:</p>
+
+<ul>
+	<li><strong>The playable character</strong>: We only have one playable character, and that&#39;s the beaver. That character has some different behaviors, like hoppong and falling, which we&#39;ll need to implement.</li>
+	<li><strong>Non-playable characters</strong>: Many games have &quot;NPCs&quot; which are programmatically controlled, and present an obstacle to the character. The only obstacle in this game is the environment, however, there are no NPCs. That simplifies things!</li>
+	<li><strong>Environment</strong>: This is a side-scroller type game, where we see a 2-d world that is scrolling by us, with a clear blue sky, ground, and grass. The sky is filled with sticks that can be collected.</li>
+	<li><strong>Overall mission</strong>: The beaver must hop to grab sticks, and she can&#39;t hop too high above or below it, or she won&#39;t pick it up. The goal is to get to the end of the level with enough sticks to create a nest.</li>
+</ul>
+
+<p>Whenever you design a game, you should think through components like that. In fact, game design documents are often many pages long - we&#39;ve written a very concise version here, just as an example.&nbsp;Now let&#39;s implement each component of the game, in roughly that order.</p>
