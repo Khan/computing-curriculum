@@ -1,1 +1,13 @@
-<!-- khanid:x0a274f09 -->
+<!-- khanid:x0a274f09 --> 
+ <p>&quot;Memory&quot; is a fun game that you may have played in &quot;real life&quot;, with actual paper tiles. It&#39;s called that because the main skill in the game is your memory - how well you can remember the position of tiles. It&#39;s also a game that can be re-created on a computer, and is a good example of using <em>computer memory</em> to remember information, like with arrays.</p>
+
+<p>Once we&#39;re done, this is what our &quot;Memory&quot; game will look like:<span class="block-image image-wrapper"><img alt="" src="https://ka-perseus-images.s3.amazonaws.com/303fff16bcb3b75de2881949fe2a9451c1fcc973.gif" style="width:394px" /></span></p>
+
+<p><span>To make the game, we will need to re-create the physical parts of the game using our drawing commands and implement the rules of the game using variables and logic. We will make a single-player version of the game, which will simplify some of the logic. Here&#39;s an outline of what we&#39;ll implement:</span></p>
+
+<ul>
+	<li>The game consists of an even number of tiles with images on one side and a generic back. Each image appears on precisely two tiles.</li>
+	<li>When the game starts, all tiles are turned face down.</li>
+	<li>The player then flips over two cards, selecting them by clicking on them. If the two tiles have the same image, they remain face up. Otherwise, the tiles flip back over after a small period of time.</li>
+	<li>The goal of the game is to get all the tiles flipped face up (i.e., find all the matching image pairs) in the least number of tries. That means that lower number of tries are better scores.</li>
+</ul>
