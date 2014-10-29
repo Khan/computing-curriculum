@@ -1,0 +1,178 @@
+<!-- khanid:x8dffd9bd --> 
+ <p>If you went through the Intro to JS course, then you made a few simple buttons in the Logic challenges <a href="https://www.khanacademy.org/computing/cs/programming/logic-if-statements/p/challenge-your-first-button">Your First Button</a> and <a href="https://www.khanacademy.org/computing/cs/programming/logic-if-statements/p/challenge-smarter-button">Smarter Button</a>. In case you forgot, let&#39;s re-hash how to make a simple button.</p>
+
+<p>First, what are the bare minimum features of a button?</p>
+
+<ol>
+	<li>A shape on the canvas (typically a rectangle</li>
+	<li>Includes a label or icon that describes what it will do</li>
+	<li>Responds to the user clicking on it (but not elsewhere)</li>
+</ol>
+
+<p>We can achieve #1 and #2 pretty easily:</p>
+
+<pre>
+<code>fill(0, 234, 255);
+rect(100, 100, 150, 50, 5);
+fill(0, 0, 0);
+textSize(19);
+text(&quot;Useless button&quot;, 110, 133);</code></pre>
+
+<p>To achieve #3, we need to define a <code>mouseClicked</code> function that will get called when the user clicks, and inside of that, we need to check whether <code>mouseX</code> and <code>mouseY</code> are within the bounding box of the button. For the button above, it spans from x=100 to x=250, and from y=100 to y=150, as illustrated below:</p>
+
+<p><img src="https://ka-perseus-images.s3.amazonaws.com/e19f7bfe6fcbebc57ac77630d06aefcdc5d6454f.png" /></p>
+
+<p>We can check those coordinates by <code>&amp;&amp;</code>ing together four conditions:</p>
+
+<pre>
+<code>mouseClicked = function() {
+    if (mouseX &gt;= 100 &amp;&amp; mouseX &lt;= 250 &amp;&amp;
+        mouseY &gt;= 100 &amp;&amp; mouseY &lt;= 150) {
+        println(&quot;Still pretty useless&quot;);    
+    }
+};</code></pre>
+
+<p>Try clicking on it and off it below to verify that it works:<iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-button/5930104553734144/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>It definitely works, but it also worries me. I&#39;m worried that it&#39;s not highly reusable code. How much work will I have to do if I want to change the position of the button? (Try it above!) I see a lot of &quot;hard-coded&quot; numbers in the code -- like the coordinates in the <code>mouseClicked</code> function, and I immediately start to wonder if there isn&#39;t a cleaner way.</p>
+
+<p>To start with, let&#39;s make variables of the position and size, so that we can change them in a single place and have the button clicking work still. I&#39;ve added <code>btnX</code>, <code>btnY</code>, <code>btnWidth</code> and <code>btnHeight</code> to the program below. Try changing their values around and clicking the button:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-button-with-variables/6005502192910336/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>Well, that&#39;s better. But still, how much work will I have to do if I want to add an extra button? Do I have to copy and paste all of that, and make <code>btn2X</code>, <code>btn2Y</code>? Ugh, that doesn&#39;t sound fun at all. This sounds like good motivation to write a function that will take care of doing everything that&#39;s the same for buttons, and use parameters to take care of what&#39;s different. We could write it like this, turning the variables into parameters:</p>
+
+<pre>
+<code><strong>var drawButton = function(btnX, btnY, btnWidth, btnHeight) {</strong>
+    background(255, 255, 255);
+    fill(0, 234, 255);
+    rect(btnX, btnY, btnWidth, btnHeight, 5);
+    fill(0, 0, 0);
+    textSize(19);
+    textAlign(LEFT, TOP);
+    text(&quot;Useless button&quot;, btnX+10, btnY+btnHeight/4);
+};</code></pre>
+
+<p>Then we&#39;d call it like so:</p>
+
+<pre>
+<code>drawButton(100, 100, 150, 50);</code></pre>
+
+<p>But, uh oh, what about our <code>mouseClicked</code> code? Do you see what the problem would be with it?</p>
+
+<pre>
+<code>mouseClicked = function() {
+    if (mouseX &gt;= btnX &amp;&amp; mouseX &lt;= (btnX+btnWidth) &amp;&amp;
+        mouseY &gt;= btnY &amp;&amp; mouseY &lt;= (btnY+btnHeight)) {
+        println(&quot;Still pretty useless&quot;);    
+    }
+};</code></pre>
+
+<p>If we had all this code together, we&#39;d get an error from Oh Noes that &quot;btnX is not defined&quot; - and he&#39;s right! We turned <code>btnX</code> into a function parameter, which means it&#39;s no longer a global variable. That&#39;s great for re-usability of the <code>drawButton</code> function, but now the <code>mouseClicked</code> function has no way to know what coordinates to check.</p>
+
+<p>So we need to figure out a nice way to pass the information into <code>drawButton</code> <strong>and</strong> make that information available to <code>mouseClicked</code>. I can think of a few options:</p>
+
+<ol>
+	<li>Re-introduce global variables for the position and size (<code>btnX, btnY, btnWidth, btnHeight</code>)</li>
+	<li>Introduce a global array that stores all the parameters (<code>var btn1 = [...];</code>)</li>
+	<li>Introduce a global object that stores the parameters (<code>var btn1 = {..}</code>)</li>
+	<li>Use object-oriented principles to define the button and store the properties (<code>var btn1 = new Button(...))</code></li>
+</ol>
+
+<p>Which to choose? Well, I don&#39;t like the first one because we&#39;ll have to add <strong>so many</strong> global variables, and I have an allergy to global variables. I don&#39;t love the second technique because its hard to read code that grabs data based on array indices. I like the third technique because it introduces only one global variable, and will produce more readable code. I also like the fourth technique, using object-oriented principles to create generic <code>Button</code> object types, but let&#39;s save that for later.</p>
+
+<p>We can create our global <code>btn1</code> object like so:</p>
+
+<pre>
+<code>var btn1 = {
+    x: 100,
+    y: 100,
+    width: 150,
+    height: 50
+};</code></pre>
+
+<p>And change the <code>drawButton</code> function to accept a single object that it then grabs properties from:</p>
+
+<pre>
+<code><strong>var drawButton = function(btn) {</strong>
+    background(255, 255, 255);
+    fill(0, 234, 255);
+    <strong>rect(btn.x, btn.y, btn.width, btn.height, 5);</strong>
+    fill(0, 0, 0);
+    textSize(19);
+    textAlign(LEFT, TOP);
+    <strong>text(&quot;Useless button&quot;, btn.x+10, btn.y+btn.height/4);</strong>
+};</code></pre>
+
+<p>The <code>mouseClicked</code> function will check the properties of the global variable:</p>
+
+<pre>
+<code>mouseClicked = function() {
+    if (mouseX &gt;= <strong>btn1.x</strong> &amp;&amp; mouseX &lt;= <strong>(btn1.x+btn1.width)</strong> &amp;&amp;
+        mouseY &gt;= <strong>btn1.y</strong> &amp;&amp; mouseY &lt;= <strong>(btn1.y+btn1.height)</strong>)     {
+        println(&quot;Still pretty useless&quot;);    
+    }
+};</code></pre>
+
+<p>Try it out below! Like before, try changing different parameters of the button and seeing if everything still works:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-button-with-function-and-object-param/4835235005464576/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>The whole point of that was to enable us to easily add more buttons, the ultimate re-usability test. Can we do it? Ba Bum BUM.</p>
+
+<p>We&#39;ll start with a new global variable, <code>btn2</code>, offset in the y direction from the first button:</p>
+
+<pre>
+<code>var btn2 = {
+    x: 100,
+    y: 200,
+    width: 150,
+    height: 50
+};</code></pre>
+
+<p>Then we&#39;ll draw that button:</p>
+
+<pre>
+<code>drawButton(btn2);</code></pre>
+
+<p>That will succeed in drawing 2 buttons on the canvas, but only the first will respond to clicks. We can make the second respond by duplicating the logic and swapping <code>btn2</code> for <code>btn1</code>, like so:</p>
+
+<pre>
+<code>mouseClicked = function() {
+    if (mouseX &gt;= btn1.x &amp;&amp; mouseX &lt;= (btn1.x+btn1.width) &amp;&amp;
+        mouseY &gt;= btn1.y &amp;&amp; mouseY &lt;= (btn1.y+btn1.height))     {
+        println(&quot;Still pretty useless&quot;);    
+    }
+    
+    <strong>if (mouseX &gt;= btn2.x &amp;&amp; mouseX &lt;= (btn2.x+btn2.width) &amp;&amp;
+        mouseY &gt;= btn2.y &amp;&amp; mouseY &lt;= (btn2.y+btn2.height))     {
+        println(&quot;2nd one still quite useless!&quot;);    
+    }</strong>
+};</code></pre>
+
+<p>But doesn&#39;t all that repeated code just make your nose crinkle? Let&#39;s make a function <code>isMouseInside</code>&nbsp;that knows how to check any button object and return true if the mouse was inside it:</p>
+
+<pre>
+<code>var isMouseInside = function(btn) {
+    return (mouseX &gt;= btn.x &amp;&amp;
+            mouseX &lt;= (btn.x+btn.width) &amp;&amp;
+            mouseY &gt;= btn.y &amp;&amp; 
+            mouseY &lt;= (btn.y+btn.height));
+};</code></pre>
+
+<p>And now we can use that function inside <code>mouseClicked</code> to greatly reduce the amount of repetitive code:</p>
+
+<pre>
+<code>mouseClicked = function() {
+    if (<strong>isMouseInside(btn1)</strong>)     {
+        println(&quot;Still pretty useless&quot;);    
+    } else if (<strong>isMouseInside(btn2)</strong>)     {
+        println(&quot;2nd one still quite useless!&quot;);    
+    }
+};</code></pre>
+
+<p>And there we have it! We&#39;ve used functions to draw multiple buttons, and made it relatively easy to add new buttons. Try it out below:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-buttons-with-functionsobject-params/5633476152262656/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>We could keep going -- making arrays of all the buttons in a program, making it possible to customize the label and color of a button -- but hopefully this has given you a good basis in how to create simple buttons using functions. Next, we&#39;ll walk through how to create buttons using object-oriented principles.</p>
