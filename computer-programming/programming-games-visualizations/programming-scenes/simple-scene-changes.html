@@ -1,0 +1,97 @@
+<!-- khanid:x57fda84f --> 
+ <p>Let&#39;s say we want to tell the story of Winston as an illustrated story book, with the user clicking to read the next part of the story. We&#39;ll start off with a main scene that just has a title:</p>
+
+<pre>
+<code>background(235, 247, 255);
+fill(0, 85, 255);
+textSize(39);
+text(&quot;The Story of Winston&quot;, 10, height/2);</code></pre>
+
+<p>Now, we want it so the user can click to see the first part of the story, Winston&#39;s epic birth. To do that, we can define a <code>mouseClicked</code> function that will be called whenever the user clicks the mouse, and we can put in the code to draw our second scene there. Note that we have to call <code>background()</code> before drawing the second scene, otherwise we&#39;ll see both scenes on top of eachother:</p>
+
+<pre>
+<code>mouseClicked = function() {
+    // Scene 2
+    background(173, 239, 255);
+    fill(7, 14, 145);
+    text(&quot;Lil Winston is born!&quot;, 10, 100);
+    image(getImage(&quot;creatures/BabyWinston&quot;), width/2, height/2);
+};</code></pre>
+
+<p>Try it out below- edit the code for the second scene&nbsp;and notice that it&#39;s annoying to edit, because you have to click every time you want to see what your second scene looks like.</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-scenes-two-scenes/6182749205954560/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>Let&#39;s solve that problem first. Yes, you and I can survive with annoying-ness, but we want to all be more productive programmers, and won&#39;t we be more productive if we can edit scene 2 and see the results in real-time? In this case, an easy thing to do is to wrap all of the scene 2 code inside a function, call that function from <code>mouseClicked</code>, and then call that function when we&#39;re debugging.</p>
+
+<pre>
+<code><strong>var drawScene2 = function() {
+    background(173, 239, 255);
+    fill(7, 14, 145);
+    text(&quot;Lil Winston is born!&quot;, 10, 100);
+    image(getImage(&quot;creatures/BabyWinston&quot;), width/2, height/2);
+};</strong>
+
+mouseClicked = function() {
+    <strong>drawScene2();</strong>
+};
+
+// Scene 1
+background(235, 247, 255);
+fill(0, 85, 255);
+textSize(39);
+text(&quot;The Story of Winston&quot;, 10, height/2);
+
+<strong>drawScene2();</strong></code></pre>
+
+<p>As long as we&#39;ve made scene 2 into a function, we may as well make scene 1 into a function as well, just wrapping all that code up and calling it. Now, try this one out below, and see how easy it is to comment out the <code>drawScene2()</code> call when you want to edit that code and see it immediately.</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-scenes-two-scenes-functions/6225776456761344/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>Great, so we have a main scene and a second scene. What if we want to display a third scene? Or go back to the first scene once we click on the third? We need to change the logic of inside <code>mouseClicked</code> so that it <em>conditionally chooses</em> which of the scenes to show, instead of always calling scene 2. That means we need an if statement that will check some sort of condition. Let&#39;s think about this in terms of pseudo-code first:</p>
+
+<pre>
+<code>// When the user clicks the mouse:
+    // if the current scene is the first one, go to the second
+    // if the current scene is the second one, go to the third
+    // if the current scene is the third one, go back to the first
+</code></pre>
+
+<p>It looks like we need to keep track of the &quot;current scene&quot;, and it&#39;d make the most sense to store it as a number. Let&#39;s declare a global variable <code>currentScene</code> and check it inside <code>mouseClicked</code>.</p>
+
+<pre>
+<code>var currentScene;
+
+mouseClicked = function() {
+    if (currentScene === 1) {
+        drawScene2();
+    } else if (currentScene === 2) {
+        drawScene3();
+    } else if (currentScene === 3) {
+        drawScene1();
+    }
+};</code></pre>
+
+<p>The conditions look like our pseudo-code, but there&#39;s one problem: we never actually set <code>currentScene</code> to a value, so those conditions will never be true. We <em>could</em> set it inside the if conditions, but it&#39;s probably better to set it inside the scene drawing functions themself, so that the variable is set correctly no matter where we call scene drawing functions from.</p>
+
+<pre>
+<code>var drawScene1 = function() {
+    <strong>currentScene = 1;</strong>
+    ...
+};
+
+var drawScene2 = function() {
+    <strong>currentScene = 2;</strong>
+    ...
+};
+
+var drawScene3 = function() {
+    <strong>currentScene = 3;</strong>
+    ...
+};</code></pre>
+
+<p>We&#39;ve put it all together in the program below. Click through it and see how it cycles around to the beginning of the story. Try adding a scene four (Winston meeting Oh Noes? Winston meeting Winstonia and moving to Winstonsin?), and spin it off:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-scenes-three-scenes-current-scene/4766697414721536/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>&nbsp;</p>
