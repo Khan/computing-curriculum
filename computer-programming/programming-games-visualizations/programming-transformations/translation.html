@@ -1,0 +1,43 @@
+<!-- khanid:xa08d1f64 --> 
+ <p>When you create a program here&nbsp;using ProcessingJS, the output is drawn to a canvas that acts like a piece of graph paper. To draw a shape, you specify its coordinates onto that graph.</p>
+
+<p>As an example, here is a simple rectangle drawn with the code <code>rect(20, 20, 40, 40)</code>. The coordinate system (a fancier word to describe that &quot;graph paper&quot;) is shown in gray, and to keep our example images smaller, the coordinate system shown is 200 pixels by 200 pixels (instead of the default 400x400 size).</p>
+
+<p><span class="block-image image-wrapper"><img alt="Square on canvas" src="https://ka-perseus-images.s3.amazonaws.com/80b51a4337678316d0f463bb4bf39eb4717fa3f6.png" /></span></p>
+
+<p>If you want to move the rectangle 60 units right and 80 units down, you can just change the coordinates by adding to the <code>x</code> and <code>y</code> starting point: <code>rect(20 + 60, 20 + 80, 40, 40)</code> and the rectangle will appear in a different place. (We put the arrow in there for dramatic effect.)</p>
+
+<p><span class="block-image image-wrapper"><img alt="Square at new location on grid" src="https://ka-perseus-images.s3.amazonaws.com/e2b47324d256b64a346fc7f22462f3dc9f2ae408.png" /></span></p>
+
+<p>But there is a more interesting way to do it: <strong>move the graph paper instead</strong>. If you move the graph paper 60 units right and 80 units down, you will get exactly the same visual result. Moving the coordinate system is called <strong><em>translation</em></strong>.</p>
+
+<p><span class="block-image image-wrapper"><img alt="Moving the graph paper" src="https://ka-perseus-images.s3.amazonaws.com/dd6c5599b4650f3764cc3dd7ac9a72ec9c66c387.png" /></span></p>
+
+<p>The important thing to notice in the preceding diagram is that, as far as the rectangle is concerned, it hasn&rsquo;t moved at all. Its upper left corner is still at (20,20). When you use transformations, the things you draw never change position; the coordinate system does.</p>
+
+<p>Here is a program that draws the original rectangle, then draws it in red at the new location by changing its coordinates, then draws it in blue at the new location by moving the grid (<code>translate()</code>ing). The fill colors are translucent, so that you can see that the red and blue overlap to form a purple square that is at virtually the same place. Only the method used to move them has changed. Fiddle with the numbers below to see for yourself:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/moving-coordinates-vs-translating/5998517940649984/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>Let&rsquo;s look at the translation code in more detail. <code>pushMatrix()</code> is a built-in function that saves the current position of the coordinate system. The <code>translate(60, 80)</code> moves the coordinate system 60 units right and 80 units down. The <code>rect(20, 20, 40, 40)</code> draws the rectangle at the same place it was originally. Remember, the things you draw don&rsquo;t move&mdash;the grid moves instead. Finally, <code>popMatrix()</code> restores the coordinate system to the way it was before you did the translate.</p>
+
+<p>Why use <code>pushMatrix()</code> and <code>popMatrix()</code>? You could have done a <code>translate(-60, -80)</code> to move the grid back to its original position. However, when you start doing more sophisticated operations with the coordinate system, it&rsquo;s easier to use <code>pushMatrix()</code> and <code>popMatrix()</code> to save and restore the status rather than having to undo all your operations. Later on in this section, you will find out why those functions seem to have such strange names.</p>
+
+<h3>What&#39;s the advantage?</h3>
+
+<p>You may be thinking that picking up the coordinate system and moving it is a lot more trouble than just adding to coordinates. For a simple example like the rectangle, you are correct. But let&rsquo;s take an example of where <code>translate()</code> can make life easier.</p>
+
+<p>Here is a program that draws a row of houses. It uses a loop that calls function named <code>drawHouse()</code>, which takes the <code>x</code> and <code>y</code> location of the house&rsquo;s upper-left corner as its parameters. Notice that the <code>drawHouse</code> function has to do a lot of parameter manipulation to get the house drawn at the given coordinates:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/drawing-a-house-with-coordinates/5945738798825472/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>What if we used the <code>translate()</code> function instead of calculating new coordinates? In this case, the code draws the house in the same place every time, with its upper left corner at (0, 0), and lets translation do all the work instead.</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/drawing-a-house-with-translation/5598439757316096/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>It doesn&#39;t mean that you should always favor <code>translate()</code> instead of calculating new coordinates. Like much of what we teach, it is another tool in your toolbox, and it will be up to you to figure out when it makes sense to use this new <code>translate()</code> tool.</p>
+
+<p>&nbsp;</p>
+
+<hr />
+<p>This article is an adaptation of <a href="http://www.processing.org/tutorials/transform2d/">2D Transformations</a> by J David Eisenberg, used under a <a href="http://creativecommons.org/licenses/by-nc-sa/2.0/">Creative Commons Attribution-NonCommercial-ShareAlike</a> License.</p>
