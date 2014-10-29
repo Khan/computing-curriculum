@@ -1,0 +1,53 @@
+<!-- khanid:x610fd387 --> 
+ <p>We have the beaver hopping, we have the sticks displaying - we just need to bring the two together. We want to know whenever our beaver manages to get right over a stick, so that we can count that as a successful stick grab. That means we need to do a basic collision check of the two objects. There&#39;s a lot of places we could program this functionality, since it deals with two objects - as a global function, as a method on the Stick object, as a method on the Beaver object. Let&#39;s stick it on the beaver for now:</p>
+
+<pre>
+<code>Beaver.prototype.checkForStickGrab = function(stick) {
+&nbsp; // if beaver is over stick, do something
+};</code></pre>
+
+<p>In that function, we first need to write a condition that will be true if the beaver and stick collided, and false otherwise. We could make it complex or strict, based on the location of the beaver&#39;s hand, for example, but let&#39;s stay basic for now. They should &quot;collide&quot; if:</p>
+
+<ul>
+	<li>The stick&#39;s center x position is between the two sides of the beaver.</li>
+	<li>The stick&#39;s center y position is between the top and bottom of the beaver.</li>
+</ul>
+
+<p>The stick is drawn using the <code>rect</code> command, so typically, that would mean that its <code>x</code> and <code>y</code> properties represented its upper left corner coordinates. However, to simplify our collision calculation, we can switch to a mode where the <code>rect</code> is drawn from the center:</p>
+
+<pre>
+<code>rectMode(CENTER);
+rect(this.x, this.y, 5, 40);</code></pre>
+
+<p>The image for the beaver is also drawn by default from the upper left corner, but we&#39;ll keep that mode, as it works well for our calculation. To check the first condition, on the x position, we can do a check like this, where we check that the stick x is greater than or equal to the beaver&#39;s left side (x) and less than or equal to the beaver&#39;s right side (x + 40)</p>
+
+<pre>
+<code>stick.x &gt;= this.x &amp;&amp; stick.x &lt;= (this.x + 40)</code></pre>
+
+<p>To check the y position, we can do a similar check, where we see if the stick y is greater than or equal to the beaver&#39;s top (y) and less than or equal to the beaver&#39;s bottom (y + 40):</p>
+
+<pre>
+<code>stick.y &gt;= this.y &amp;&amp; stick.y &lt;= (this.y + 40)</code></pre>
+
+<p>Now, what should we actually do, once we&#39;ve detected a collision between the beaver and the stick? We effectively want to remove the stick from the screen and prevent further collision. One simple way to do that is to just push the stick way off screen, by changing its y coordinate:</p>
+
+<pre>
+<code>stick.y = -400;</code></pre>
+
+<p>At the same time, we want to remember how many sticks the beaver has &quot;grabbed&quot;, so we&#39;ll increment the internal sticks property:</p>
+
+<pre>
+<code>this.sticks++;</code></pre>
+
+<p>Finally, we need to call this method at an opportune time- how about right after we&#39;ve drawn each stick?</p>
+
+<pre>
+<code>    for (var i = 0; i &lt; sticks.length; i++) {
+        sticks[i].draw();
+        <strong>beaver.checkForStickGrab(sticks[i]);</strong>
+        sticks[i].x -= 1;
+    }</code></pre>
+
+<p>Here it is all together - check it out, when you hop over the sticks, they disappear!</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/hoppy-beaver-with-stick-collision/4553816089296896/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
