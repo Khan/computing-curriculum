@@ -1,0 +1,54 @@
+<!-- khanid:x41310aec --> 
+ <p>We&#39;ve seen how to make multiple simple scenes - but our scenes were what we call &quot;static&quot; - they weren&#39;t animated, nor did they have any response to user interaction. As we&#39;ll see, it requires a bit more finesse to handle fancier scenes. But hey, let&#39;s get fancy!</p>
+
+<p>Let&#39;s talk about animation first. What if we wanted to show Winston in his rock star phase, drumming hard to the beat? We&#39;d normally do that by defining the <code>draw</code> function to contain code that draws shapes that move position slightly each frame. Here&#39;s an example, where the position of the drumming hands is based on the current <code>millis()</code> value, the number of ellapsed milliseconds:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/winston-drummer/4637363987283968/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>What if we add that as scene 4 to our previous example? We&#39;ll move the code into a <code>drawScene4()</code> function, and modify our <code>mouseClicked</code> logic.</p>
+
+<pre>
+<code>var drawScene4 = function() {
+    currentScene = 4;
+    background(194, 255, 222);
+    
+    var x = cos(millis()*1); 
+    var y = cos(millis()+98);
+    
+    ...
+ };
+ 
+ 
+ mouseClicked = function() {
+    if (currentScene === 1) {
+        drawScene2();
+    } else if (currentScene === 2) {
+        drawScene3();
+    <strong>} else if (currentScene === 3) {
+        drawScene4();
+    </strong>} else if (currentScene === 4) {
+        drawScene1();
+    }
+};
+</code></pre>
+
+<p>Try it out below - click through a few times:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-scenes-scenes-with-animation/6394287602794496/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>Notice something? It worked, but only kind of. We could see Winston with his drum set, but his drum sticks weren&#39;t moving. How sad! It&#39;s hard to make music when you&#39;re frozen in time. Perhaps you&#39;ve already caught onto the issue: we&#39;re no longer calling the drumsticks-drawing code from within <code>draw()</code>, so it&#39;s only getting called once--not repeatedly--and thus only rendering the sticks at the moment in time at which it&#39;s first called. Perhaps you&#39;ve also already guessed the solution: define a <code>draw()</code> function, and call <code>drawScene4()</code> when appropriate.</p>
+
+<pre>
+<code>draw = function() {
+    if (currentScene === 4) {
+        drawScene4();
+    }
+};</code></pre>
+
+<p>Let&#39;s just think through that for a bit: whenever we define a <code>draw()</code> function in our code, it will then get called repeatedly (defaulting to 30 FPS), and whenever it&#39;s called, when the current scene has already been set to 4, then it&#39;ll call the function to draw scene 4. When it&#39;s any other value, it won&#39;t attempt to draw anything at all-- keeping whatever was already on the screen. We still need to do the initial scene drawing in <code>mouseClicked</code>, this logic just takes care of animating every frame after.</p>
+
+<p>Some of you might be thinking: why don&#39;t we just have logic that calls <em>every</em> scene drawing function inside <code>draw()</code>? Well, you certainly could, and that&#39;d mean that if you added animation to the other scenes, then they would just work immediately. But assuming you don&#39;t animate your other scenes, that means you&#39;re making the computer re-draw those scenes repeatedly <em>for no reason</em>. From a performance perspective, that&#39;s not good. If we know we can easily save the computer unnecessary work, we should. It will make our programs faster and users happier.</p>
+
+<p>Alright, now that we&#39;ve discussed all that, here&#39;s the story in its clickable, animated glory. You can almost hear the beats coming out of scene 4!</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-scenes-scenes-with-animation-working/4819580273295360/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
