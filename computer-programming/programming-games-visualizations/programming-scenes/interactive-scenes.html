@@ -1,0 +1,110 @@
+<!-- khanid:x3bf16a6f --> 
+ <p>Now that we know how to make sweet animated scenes, let&#39;s make sure we can handle the other sort of non-static scene: scenes that respond to user interaction. For example, we want to draw a scene where Winston has babies (after his rock star phase, of course) -- but we also want to let the user click to give Winston MORE babies. Because we can always use more little Winstonitos in the world, right?</p>
+
+<p>Here&#39;s what that scene would look like as a standalone program. The program draws the static part of the scene, and then in <code>mouseClicked</code>, it draws Winston baby images at the clicked mouse location, layering them on top of whatever was already drawn.</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/winston-has-babies/5352340297613312/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>How would we integrate that into our multi-scene program? Well, we&#39;d start by just wrapping all the static drawing code into a scene drawing function <code>drawScene5()</code> and adding scene switching logic to <code>mouseClicked</code>:</p>
+
+<pre>
+<code><strong>var drawScene5 = function() {
+    currentScene = 5;
+    background(173, 239, 255);
+    fill(7, 14, 145);
+    textSize(39);
+    text(&quot;Winston has babies!&quot;, 10, 47);
+    ...
+};</strong>
+
+mouseClicked = function() {
+    if (currentScene === 1) {
+        drawScene2();
+    } else if (currentScene === 2) {
+        drawScene3();
+    } else if (currentScene === 3) {
+        drawScene4();
+    }<strong>  else if (currentScene === 4) {
+        drawScene5();
+    } else if (currentScene === 5) {</strong>
+        drawScene1();
+    }
+};</code></pre>
+
+<p>Here&#39;s what that looks like:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-scenes-scenes-with-interaction-fail/5538589323034624/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>But how do we integrate the <code>mouseClicked</code> functionality? We&#39;ve already defined a <code>mouseClicked</code> in our code, and we can&#39;t define it twice. In JavaScript, the last function definition &quot;wins&quot;, it overrides any previous definitions. That means that we need to find a good place to put that baby drawing line inside our existing <code>mouseClicked</code>. Let&#39;s talk about a few options:</p>
+
+<p><strong>1. We could put the line at the top of the function:</strong></p>
+
+<pre>
+<code>mouseClicked = function() {
+    <strong>image(getImage(&quot;creatures/BabyWinston&quot;), mouseX-20, mouseY-20);</strong>
+    ...
+};</code></pre>
+
+<p>Then it will get called EVERY time the user clicks the mouse, even if it&#39;s not the baby making scene (and it&#39;d be weird if baby winston had a baby). No good.</p>
+
+<p><strong>2. We could put the line inside the <code>currentScene === 4</code> if block:</strong></p>
+
+<pre>
+<code>mouseClicked = function() {
+    if (currentScene === 1) {
+        drawScene2();
+    } else if (currentScene === 2) {
+        drawScene3();
+    } else if (currentScene === 3) {
+        drawScene4();
+    }  else if (currentScene === 4) {
+        drawScene5();
+        <strong>image(getImage(&quot;creatures/BabyWinston&quot;), mouseX-20, mouseY-20);</strong>
+    } else if (currentScene === 5) {
+        drawScene1();
+    }
+};</code></pre>
+
+<p>After all, that&#39;s where we call <code>drawScene5()</code>, and the babies should be added to scene 5. But think about it: that&#39;d mean that we&#39;d <strong>always</strong> draw an extra baby, every time we drew the scene. It&#39;d also mean that we&#39;d never draw <strong>any more</strong> babies, because <code>currentScene</code> would get set to 5, and the code in that if block wouldn&#39;t get executed any more.</p>
+
+<p><strong>3. We could put the line inside the <code>currentScene === 5</code> if block:</strong></p>
+
+<pre>
+<code>mouseClicked = function() {
+    if (currentScene === 1) {
+        drawScene2();
+    } else if (currentScene === 2) {
+        drawScene3();
+    } else if (currentScene === 3) {
+        drawScene4();
+    }  else if (currentScene === 4) {
+        drawScene5();
+    } else if (currentScene === 5) {
+        <strong>image(getImage(&quot;creatures/BabyWinston&quot;), mouseX-20, mouseY-20);</strong>
+        drawScene1();
+    }
+};</code></pre>
+
+<p>That would mean we wouldn&#39;t draw babies until the first click after the initial drawing of the scene. But, as you can see from the line after it, the baby would be instantly replaced with scene 1.</p>
+
+<p>This is where we realize a fatal flaw in our idea of integrating this baby-clicking scene into our scenes: we&#39;re using the exact same interaction--a mouse click anywhere on the screen--to change scenes as well as to do within-scene interaction. Now we really have a conundrum on our hands, and we need to consider more radical options for integrating the scene.</p>
+
+<p><strong>4. We could stop re-drawing scene 1 at the end, and tell the user to restart in that case. </strong>Sure, that&#39;d work, but that relies on the fact that our click-controlled screen happens to be in the last one. What if we wanted an earlier click-controlled scene? That solution would fail.</p>
+
+<p><strong>5. We could use a different sort of interaction - like&nbsp;<code>mouseDragged.&nbsp;</code></strong>That will work, because&nbsp;dragging doesn&#39;t also cause a click event. We still need to check that <code>currentScene === 5</code>, to make sure dragging doesn&#39;t draw babies in any other scene:</p>
+
+<pre>
+<code>mouseDragged = function() {
+    if (currentScene === 5) {
+        image(getImage(&quot;creatures/BabyWinston&quot;), mouseX-20, mouseY-20);
+    }
+    <strong>drawButton();</strong>
+};</code></pre>
+
+<p>Try it out below, making sure you drag on the final scene:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-scenes-scenes-with-interaction-draggable/5264350107926528/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>So, that kind of works, although I&#39;m a bit worried about how many babies Winston might end&nbsp;up with. Generally, this is not an optimal solution, since it means we have to limit ourselves to designing scenes that don&#39;t respond to mouse clicks. We don&#39;t want to have to have that constraint, <em>there must be a better way.</em></p>
+
+<p>What if we instead differentiated mouse clicks by location, so that a click in one location would mean changing scenes, and clicks elsewhere could be used for in-scene interaction? You know, like a button! In fact, that&#39;s how most multi-scene programs approach this problem, and we&#39;ll talk through that next.</p>
