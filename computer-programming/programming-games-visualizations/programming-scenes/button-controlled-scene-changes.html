@@ -1,0 +1,104 @@
+<!-- khanid:x0ca994bb --> 
+ <p>We&#39;ve gotten away so far with just having the user click anywhere at all in order to change scenes. But we&#39;ve realized there&#39;s a drawback to that approach: we can&#39;t use clicks within scenes for any sort of additional interaction. The way that many games and apps solve that is by adding specific UI elements, like menus and buttons, and only navigating scenes upon interaction with a specific UI element. Let&#39;s add a button in the top right to control the scenes in our program.</p>
+
+<p>What is a &quot;button&quot;? It&#39;s two things really: 1) the visual indicator that an area is clickable and 2) the logic that makes that area respond to clicks. Let&#39;s start with the visual indicator, a <code>rect()</code> with some <code>text()</code>, and wrap it in a function, in case we want to call it multiple times:</p>
+
+<pre>
+<code>var drawButton = function() {
+    fill(81, 166, 31);
+    rect(340, 10, 50, 25);
+    fill(255, 255, 255);
+    textSize(16);
+    text(&quot;NEXT&quot;, 344, 29);
+};</code></pre>
+
+<p>Now where should we call it? We definitely need to call it when we draw the first scene, so they have a way of getting to the next scene:</p>
+
+<pre>
+<code>drawScene1();
+drawButton();</code></pre>
+
+<p>We also need to display it on every subsequent scene. We could call it from inside every scene drawing function, but there&#39;s a simpler way: just stick it at the end of our <code>mouseClicked</code> function, to make sure it&#39;s called after we draw every scene:</p>
+
+<pre>
+<code>mouseClicked = function() {
+    if (currentScene === 1) {
+        drawScene2();
+    } else if (currentScene === 2) {
+        drawScene3();
+    } else if (currentScene === 3) {
+        drawScene4();
+    }  else if (currentScene === 4) {
+        drawScene5();
+    } else if (currentScene === 5) {
+        drawScene1();
+    }
+    <strong>drawButton();</strong>
+};</code></pre>
+
+<p>Okay, I lied, it&#39;s not quite that simple. With the above code, we would see the button in every scene except one. Can you figure out which one? I&#39;ll give you a few seconds...stop reading this! Are you thinking about it? Okay, okay, it&#39;s the animated scene. That&#39;s because the code inside <code>draw()</code> will draw&nbsp;scene 4 on top of&nbsp;the button immediately, so we need to add it to the end of that function as well:</p>
+
+<pre>
+<code>draw = function() {
+    if (currentScene === 4) {
+        drawScene4();
+    }
+    <strong>drawButton();</strong>
+};</code></pre>
+
+<p>And hey, just in case some enterprising individual decides to drag babies all over the next button, let&#39;s call it at the end of <code>mouseDragged</code> as well:</p>
+
+<pre>
+<code>mouseDragged = function() {
+    if (currentScene === 5) {
+        image(getImage(&quot;creatures/BabyWinston&quot;), mouseX-20, mouseY-20);
+    }
+    <strong>drawButton();</strong>
+};</code></pre>
+
+<p>Woo! Now we&#39;ve got a button in every scene, all the time. Check it out:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-scenes-scenes-with-interaction-button/5318686343168000/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p><span>But, haha, you know what&#39;s hilarious? The button does nothing! I mean, the user might think it does something, if they decide to click only that area. But in fact, they could click anywhere, and it&#39;d do the same thing. We need to change our </span><code>mouseClicked</code><span> logic so that we check the button location before we decide it&#39;s scene-a-changing time.</span></p>
+
+<p>Like we did in the button challenges in Intro to JS, we need to come up with an if condition to check <code>mouseX</code> and <code>mouseY</code>. Usually, that means combining four conditions with the <code>&amp;&amp;</code> operator, checking that the <code>mouseX</code> is greater than the left side, <code>mouseX</code> is less than the right side, <code>mouseY</code> is greater than the top edge, and <code>mouseY</code> is less than the bottom edge. But, our button is in the upper right corner, and I want to give the user some clicking leeway room anyway, so let&#39;s just simplify and only check two conditions - is <code>mouseX</code> greater than the left side, and is <code>mouseY</code> less than the bottom edge?</p>
+
+<pre>
+<code>mouseClicked = function() {
+    <strong>if (mouseX &gt;= 340 &amp;&amp; mouseY &lt;= 45) {</strong>
+        if (currentScene === 1) {
+            drawScene2();
+        } else if (currentScene === 2) {
+            drawScene3();
+        } else if (currentScene === 3) {
+            drawScene4();
+        }  else if (currentScene === 4) {
+            drawScene5();
+        } else if (currentScene === 5) {
+            drawScene1();
+        }
+        drawButton();
+    <strong>}</strong>
+};</code></pre>
+
+<p>That&#39;s it! With that check, we now have a program where the user clicks a particular area of the screen to move to the next scene. Try out clicking the button and non-button parts:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-scenes-scenes-with-interaction-button-working/6639941495291904/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>Now that we have a way of knowing when a click is meant for changing scenes, we can use clicks for other interactions in our scenes, as long as they&#39;re not clicking on the button. That means we can let the user add the Winston babies on click instead of drag, like we originally wanted. We&#39;ll just add an else to our if, and move the code from <code>mouseDragged</code> into that else:</p>
+
+<pre>
+<code>mouseClicked = function() {
+    if (mouseX &gt;= 340 &amp;&amp; mouseY &lt;= 45) {
+        ...
+    }<strong> else {
+        if (currentScene === 5) {
+            image(getImage(&quot;creatures/BabyWinston&quot;), mouseX-20, mouseY-20);
+        }
+    }</strong>
+};</code></pre>
+
+<p>Note that we need to keep the check for current scene, to make sure it only happens for that scene. But now, it&#39;s easy for us to add click interaction on any other scene too. What else could you let the user add? Drums? Facial hair? Play around with the program below:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/simple-scenes-scenes-with-interaction-button-and-click-interaction/5579989452324864/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
