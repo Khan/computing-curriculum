@@ -1,0 +1,70 @@
+<!-- khanid:x360afc57 --> 
+ <p>So now that we have a representation of our cube, we need to find a way to draw it.</p>
+
+<p>To draw a 3D shape on a 2D surface, we need to &quot;project&quot; it. Imagine shining a light behind the cube and projecting it&#39;s shadow onto a screen. The simplest form of projection is an orthogonal projection, which is what you would get if the beams of light were parallel to one another.</p>
+
+<p>All this talk of projections might sound complicated, but it is very easy to implement: we just ignore the z-coordinates when drawing.</p>
+
+<h3>Setting things up</h3>
+
+<p>I like to create variables at the top of my programs to control how things are displayed, so I can easily change them later. Here are some variables we will want shortly; feel free to change the values.</p>
+
+<pre>
+<code>var backgroundColor = color(255, 255, 255);
+var nodeColor = color(40, 168, 107);
+var edgeColor = color(34, 68, 204);
+var nodeSize = 8;</code></pre>
+
+<p>Now we add a basic draw function:</p>
+
+<pre>
+<code>var draw = function() { 
+    background(backgroundColor);
+};</code></pre>
+
+<p>We will also need to add the following to our code:</p>
+
+<pre>
+<code>translate(200, 200);</code></pre>
+
+<p>This shifts our canvas 200 pixels right and 200 pixels down, so the pixel at position (0, 0), is now in the centre of our canvas. This means that our cube will be drawn in the center of the screen. The reason for doing things this way will become clear when we start to rotate our objects.</p>
+
+<h3>Drawing nodes</h3>
+
+<p>Inside the draw function we loop through all the nodes and draw an ellipse at the (x, y) coordinate of that node:</p>
+
+<pre>
+<code>fill(nodeColor);
+noStroke();
+for (var n = 0; n &lt; nodes.length; n++) {
+   var node = nodes[n];
+   ellipse(node[0], node[1], nodeSize, nodeSize);
+}</code></pre>
+
+<h3>Drawing edges</h3>
+
+<p>Also inside the draw function we add the code for drawing edges. I would add it before the code for drawing nodes, so the nodes are drawn on top of the edges.</p>
+
+<pre>
+<code>stroke(edgeColor);
+for (var e = 0; e &lt; edges.length; e++) {
+   var n0 = edges[e][0];
+   var n1 = edges[e][1];
+   var node0 = nodes[n0];
+   var node1 = nodes[n1];
+   line(node0[0], node0[1], node1[0], node1[1]);
+}</code></pre>
+
+<p>This code loops through the array of edges. It gets the two numbers defined by an edge and looks up the corresponding node in the nodes array. Then it draws a line from the (x, y) coordinate of the first node to the (x, y) coordinate of the second node.</p>
+
+<h3>Is that it?</h3>
+
+<p>We set out to draw a cube, yet&nbsp;all we&#39;ve done is draw a square and four circles:</p>
+
+<p>&nbsp;</p>
+
+<div class="scratchpad-wrapper"><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/3d-tutorial-1/1638059319/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes&amp;autoStart=yes" width="790"></iframe></div>
+
+<p>&nbsp;</p>
+
+<p><span>We could have drawn that with a lot less effort. However, this really is our cube - it&#39;s just that we&#39;re viewing it end on. If we can work out how to rotate our cube so it&#39;s no longer end on to the screen, we&#39;ll see that it&#39;s not just a square and four circles.</span></p>
