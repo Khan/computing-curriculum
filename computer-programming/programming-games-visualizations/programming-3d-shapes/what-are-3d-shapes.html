@@ -1,0 +1,41 @@
+<!-- khanid:x9eb3ee1d --> 
+ <p><em>This tutorial is from&nbsp;<a href="https://www.khanacademy.org/profile/peterwcollingridge/">Peter Collingridge</a>&nbsp;and was <a href="http://petercollingridge.appspot.com/3D-tutorial">originally posted</a> on his website.</em></p>
+
+<p>If you&#39;ve been programming here on Khan Academy, you&#39;ve probably drawn a whole lot of 2D shapes, like with rectangles and ellipses, and maybe you&#39;ve wondered to yourself how to make 3D shapes, like cubes and spheres.</p>
+
+<p>Well, the ProcessingJS library that we use here isn&#39;t really designed for 3D graphics, but as it turns out, with some trigonometry, we can write our own 3D graphics engine &nbsp;and, in doing so, learn a bit how 3D graphics work (and why there is a&nbsp;reason to learn trigonometry besides making math teachers happy!).</p>
+
+<p><span>Here&#39;s an example of the sort of program you can make - use your mouse to rotate the donut around:</span></p>
+
+<div class="scratchpad-wrapper"><iframe class="scratchpad" frameborder="0" height="400" scrolling="no" src="https://www.khanacademy.org/cs/shaded-torus/1071783640/embedded?embed=yes&amp;article=yes&amp;editor=no&amp;buttons=no&amp;author=no&amp;autoStart=no&amp;width=400&amp;height=400" width="400"></iframe></div>
+
+<h3>What are 3D graphics?</h3>
+
+<p>Since computer screens are essentially two-dimensional, 3D graphics are just 2D optical illusions that trick your brain into thinking it is seeing a 3D object. Here&#39;s a simple example:</p>
+
+<p><span class="block-image image-wrapper"><img alt="3D cube" src="https://ka-perseus-images.s3.amazonaws.com/1bf54665b00b4b9ebc15e10687dac516efae8f09.png" /><span class="image-caption">Three parallelograms pretending to be a cube</span></span></p>
+
+<p>A 3D graphics engine works by calculating what 2D shapes a 3D object would project on to the screen. So to write our own 3D engine, we need to know how to do these calculations. Our program won&#39;t be as quick as most 3D engines but it should help us understand the principles of how they work.</p>
+
+<h3>Representing shapes</h3>
+
+<p>A 3D graphics engine takes a 3D object and converts into 2D graphics, but how do we represent a 3D object in code?</p>
+
+<p>A single point in 3D space is easy to represent using an array of three numbers. For example, we can use&nbsp;[30, 80, 55]&nbsp;to represent a point 30 pixels along the horizontal (x) axis, 80 pixels along the vertical (y) axis, and 55 pixels along the axis that goes into and out of the screen. Play around with the point below, rotating with the mouse and tinkering with the numbers:</p>
+
+<p><iframe height="310" scrolling="no" src="https://s3.amazonaws.com/ka-article-iframes/programming_3d_graphics/movable_point.html" width="350"></iframe></p>
+
+<p>Representing a line is also easy: you just connect two points. One way to represent an object in 3D, therefore, is by converting it into a group of lines. This is called a wireframe, as it looks like the object is made from wire. It&#39;s obviously not ideal for representing solid objects, but it&#39;s a good place to start.</p>
+
+<p><iframe height="200" src="https://s3.amazonaws.com/ka-article-iframes/programming_3d_graphics/wireframe_cube.html" width="200"></iframe></p>
+
+<h3>Terms</h3>
+
+<p>Below are some terms that we will use when refering to 3D shapes. Other terms might be used elsewhere, but these ones are pretty popular.</p>
+
+<ul>
+	<li><strong>Node</strong>: a point represented by three coordinates, x, y and z (can also be called a vertex).</li>
+	<li><strong>Edge</strong>: a line connecting two points.</li>
+	<li><strong>Face</strong>: a surface defined by at least three points.</li>
+	<li><strong>Wireframe</strong>: a shape consisting of just nodes and edges.</li>
+</ul>
