@@ -1,0 +1,17 @@
+<!-- khanid:xd87caae5 --> 
+ <p>The final coordinate system transformation is scaling, which changes the size of the grid. Take a look at this program, which draws a square, then scales the grid to twice its normal size, and draws it again.</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/scaled-square/5146780291825664/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>First, you can see that the square appears to have moved. It hasn&rsquo;t, of course. Its upper left corner is still at (20, 20) on the scaled-up grid, but that point is now twice as far away from the origin as it was in the original coordinate system.</p>
+
+<p>If you wanted the large square to start at the same corner as the small square, you could translate first, and then scale:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/scaled-and-translated-square/4677949177987072/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>You might also notice from both of those programs that the lines are thicker on the large squares. That&rsquo;s no optical illusion&mdash;the lines really are twice as thick, because the coordinate system has been scaled to double its size. You could explicitly change the <code>strokeWeight()</code> to account for that, or avoid using <code>scale()</code> all together.</p>
+
+<p>The <code>scale()</code> command optionally accepts two parameters instead of just one, so you can scale the x and y dimensions separately. Try using <code>scale(3.0, 0.5)</code> in the above program to make the x dimension three times its normal size and the y dimension only half its normal size.</p>
+
+<hr />
+<p>This article is an adaptation of <a href="http://www.processing.org/tutorials/transform2d/">2D Transformations</a> by J David Eisenberg, used under a <a href="http://creativecommons.org/licenses/by-nc-sa/2.0/">Creative Commons Attribution-NonCommercial-ShareAlike</a> License.</p>
