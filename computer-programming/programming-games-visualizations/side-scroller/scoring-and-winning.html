@@ -1,0 +1,32 @@
+<!-- khanid:x833dc4a3 --> 
+ <p>Okay, but what&#39;s a game if there&#39;s no winning or losing? It&#39;s LIFE! Haha, but no, really. Let&#39;s add a score and a win state to the game. We have many options for how we could score:</p>
+
+<ul>
+	<li>Count how many sticks the beaver grabs.</li>
+	<li>Count how many sticks the beaver misses.</li>
+	<li>Award more points for higher accuracy - like based on distance of beaver from stick center.</li>
+</ul>
+
+<p>Sometimes games are purely about scores and raising your score, but other times, they have distinct win or lose states. What could we do in this game?</p>
+
+<ul>
+	<li>Declare them a winner if they grabbed some percentage of the sticks (up to 100%).</li>
+	<li>Immediately fail them if they miss some percentage of the sticks.</li>
+	<li>Fail them if they miss some number of sticks in a row.</li>
+</ul>
+
+<p>For simplicity&#39;s sake, let&#39;s implement the first options: we&#39;ll score based on the number of stick grabs, and we&#39;ll declare them a winner if they get 90% of the sticks.</p>
+
+<p>We want to always display the score, so we can just stick a text command in the draw function:</p>
+
+<pre>
+<code>text(&quot;Score: &quot; + beaver.sticks, 20, 20);</code></pre>
+
+<p>For the win state, we should come up with a condition that we can check each time, and then do something festive if it&#39;s true. Here&#39;s what we could do if we wanted to make sure you got 95% of the sticks:</p>
+
+<pre>
+<code>if (beaver.sticks/sticks.length &gt;= 0.95) {
+    text(&quot;YOU WIN!!!!&quot;, width/2, height/2);
+}</code></pre>
+
+<p>Give it a go! Can you win?<iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/hoppy-beaver-with-win-state/6322680401756160/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
