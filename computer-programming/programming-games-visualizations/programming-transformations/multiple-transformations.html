@@ -1,0 +1,31 @@
+<!-- khanid:x1230d30f --> 
+ <p>Now that you&#39;ve seen the basics of translation, rotation, and scaling, let&#39;s talk about using all of them together, and some of the complexities we brushed over at the beginning.</p>
+
+<h3>Order matters</h3>
+
+<p>When you do multiple transformations, the order makes a difference. A rotation followed by a translate followed by a scale will not give the same results as a translate followed by a rotate by a scale. Here is an example program that demonstrates that:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/order-matters/6117732826218496/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>Which order you use depends on what your desired effect is. Just keep in mind that you&#39;re moving the graph paper, not the object itself, and you should find an order that works for you.</p>
+
+<h3>The transformation matrix</h3>
+
+<p>Every time you do a rotation, translation, or scaling, the information required to do the transformation is accumulated into a table of numbers. This table, or matrix has only a few rows and columns, yet, through the miracle of mathematics, it contains all the information needed to do any series of transformations. And that&rsquo;s why the <code>pushMatrix()</code> and <code>popMatrix()</code> have that word in their name.</p>
+
+<p>What about the push and pop part of the names? These come from a computer concept known as a stack, which works like a spring-loaded tray dispenser in a cafeteria. When someone returns a tray to the stack, its weight pushes the platform down. When someone needs a tray, he takes it from the top of the stack, and the remaining trays pop up a little bit.</p>
+
+<p>In a similar manner, <code>pushMatrix()</code> puts the current status of the coordinate system at the top of a memory area, and <code>popMatrix()</code> pulls that status back out. The preceding example used <code>pushMatrix()</code> and <code>popMatrix()</code> to make sure that the coordinate system was &quot;clean&quot; before each part of the drawing. In all of the other examples, the calls to those two functions weren&rsquo;t really necessary because there were no subsequent transformations, but it doesn&rsquo;t hurt anything to save and restore the grid status. As a best practice, always use those functions when you&#39;re doing any transformations.</p>
+
+<p>There is also a <code>resetMatrix()</code> function that resets the matrix back to its very original state (the &quot;identity matrix&quot;), but the push and pop functions are nearly always the better approach.</p>
+
+<div class="callout">
+<p>Want to learn or review how matrices work in Algebra? You can go through <a href="https://www.khanacademy.org/math/algebra2/algebra-matrices">Matrices</a> on Khan Academy, in particular, the <a href="https://www.khanacademy.org/math/algebra2/algebra-matrices/transformation-matrix/v/transforming-position-vector">Geometric transforms with matrices</a> section.</p>
+</div>
+
+<p>&nbsp;</p>
+
+<hr />
+<p>&nbsp;</p>
+
+<p>This article is an adaptation of <a href="http://www.processing.org/tutorials/transform2d/">2D Transformations</a> by J David Eisenberg, used under a <a href="http://creativecommons.org/licenses/by-nc-sa/2.0/">Creative Commons Attribution-NonCommercial-ShareAlike</a> License.</p>
