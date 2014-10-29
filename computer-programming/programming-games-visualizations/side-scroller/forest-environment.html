@@ -1,0 +1,94 @@
+<!-- khanid:x7715d6eb --> 
+ <p>This game is a classic 2D &quot;side-scroller&quot;: that means that we are looking at it side-on, and the character is just moving forwards or backwards through it. We always want our character in the center of the screen however, so actually, we simulate apparent motion of the character by moving the *background* past the character. It&#39;s a trick, but it works!</p>
+
+<p>To start off with, let&#39;s just draw the parts that won&#39;t show any motion, the blue sky and brown ground:</p>
+
+<pre>
+<code>draw = function() {
+    background(227, 254, 255);
+    fill(130, 79, 43);
+    rect(0, height*0.90, width, height*0.10);
+    // ...
+}
+</code></pre>
+
+<p>Now, to create the side-scrolling appearance, let&#39;s add grass, using the grass&nbsp;image from the <a href="https://www.khanacademy.org/cs/imageimage-x-y/937672662">image</a> library. One way we could create this moving environment would be to pretend our canvas was 3000 pixels wide, and that&#39;s how wide our level was, and draw as many grass blocks to fit those 3000 pixels, moving them over each time. However, that&#39;s not very efficient, and in programming games, we tend to care a lot about efficiency. Instead, we are going to &quot;tile&quot; and &quot;snake&quot; the grass images. We&#39;ll just draw as many as we need to go across the 400 pixel&nbsp;screen, and then when one falls of the left side of the right screen, we&#39;ll immediately stick it back on the right side of the screen, and just continue doing that forever.</p>
+
+<p>To do that, we&#39;ll start by initializing an array of our initial positions for the grass blocks:</p>
+
+<pre>
+<code>var grassXs = [];
+for (var i = 0; i &lt; 25; i++) {
+    grassXs.push(i*20);
+}</code></pre>
+
+<p>Then, inside our draw loop, we&#39;ll draw each of them:</p>
+
+<pre>
+<code>for (var i = 0; i &lt; grassXs.length; i++) {
+   image(getImage(&quot;cute/GrassBlock&quot;), grassXs[i], height*0.85, 20, 20);
+}</code></pre>
+
+<p>That looks good for a static scene, but we need this to move! So we can just subtract one from each grass position each time, moving them to the left 1 pixel.</p>
+
+<pre>
+<code>for (var i = 0; i &lt; grassXs.length; i++) {
+   image(getImage(&quot;cute/GrassBlock&quot;), grassXs[i], height*0.85, 20, 20);
+    grassXs[i] -= 1;
+}</code></pre>
+
+<p>Now the grass will be moving, but it&#39;ll eventually disappear, as the x values become more and more negative. Remember, we want to &quot;snake&quot; the tiles - we want to wrap them to the right side of the canvas once they drop off the left side. To do that, we&#39;ll check if we&#39;re sufficiently off screen (remember that our images are drawn from the upper left corner), and set the x value to the canvas width if so:</p>
+
+<pre>
+<code>for (var i = 0; i &lt; grassXs.length; i++) {
+   image(getImage(&quot;cute/GrassBlock&quot;), grassXs[i], height*0.85, 20, 20);
+    grassXs[i] -= 1;
+    <strong>if (grassXs[i] &lt;= -20) {
+        grassXs[i] = width;
+    }</strong>
+}</code></pre>
+
+<p>Putting it all together, we now have a beaver that looks like it&#39;s moving while it&#39;s hopping. Magic!</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/hoppy-beaver-with-side-scrolling-background/6591033741672448/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>Okay, we have a beaver hopping through a side-scrolling environment. But there&#39;s nothing for the beaver to do there! We need to add the sticks for the beaver to hop up and collect.</p>
+
+<p>Let&#39;s think a bit about our sticks, as we need to decide how to program them:</p>
+
+<ul>
+	<li>Each stick has an <strong>x</strong> and <strong>y</strong> position. We probably want the x positions distributed by some amount (possiby constant or random within a range), and we want the y positions randomized within a range, so that the user has to control the beaver&#39;s hop and fall.</li>
+	<li>The sticks should have the same apparent movement as the grass, but they <strong>should not</strong> snake around. Once a stick is off screen, it&#39;s gone forever.</li>
+	<li>There should be some set amount of sticks per level - at some point, there should stop being sticks.</li>
+</ul>
+
+<p>There&#39;s many ways that we could program our sticks, but they seem sufficiently complex, so let&#39;s model them with an object, like we modeled our beaver character:</p>
+
+<pre>
+<code>var Stick = function(x, y) {
+    this.x = x;
+    this.y = y;
+};
+
+Stick.prototype.draw = function() {
+    fill(89, 71, 0);
+    rect(this.x, this.y, 5, 40);
+};</code></pre>
+
+<p>Then, before our game starts running - like after we initialize our beaver - let&#39;s create an array of 40 sticks, with constant offset and random y:</p>
+
+<pre>
+<code>var sticks = [];
+for (var i = 0; i &lt; 40; i++) {  
+    sticks.push(new Stick(i * 40 + 300, random(20, 260)));
+}</code></pre>
+
+<p>Now we can draw the sticks - similar to how we drew the grass, just without the wrapping around:</p>
+
+<pre>
+<code>for (var i = 0; i &lt; sticks.length; i++) {
+    sticks[i].draw();
+    sticks[i].x -= 1;
+}</code></pre>
+
+<p>Here it is, with the sticks drawn with that code. Try to hop for them! What happens? Nothing! We&#39;ll fix that soon...<iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/hoppy-beaver-with-side-scrolling-sticks/6631262494130176/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
