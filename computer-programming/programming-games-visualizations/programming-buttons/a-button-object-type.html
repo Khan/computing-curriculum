@@ -1,0 +1,206 @@
+<!-- khanid:x1f1cd8f4 --> 
+ <p>One of the best ways to make code reusable and powerful is to use object-oriented programming, especially for making UI controls like buttons. In object-oriented programming, we think of the our program world in terms of abstract object types that have particular behavior, and then we create specific instances of those object types with particular parameters. If you don&#39;t remember how to do it in JavaScript, <a href="https://www.khanacademy.org/computing/cs/programming/object-oriented/a/review-object-oriented-design">review it here</a>.</p>
+
+<p>To use OOP to make buttons, we&#39;ll need to define a <code>Button</code> object type and then define methods on it, like to draw it and handle mouse clicks. We&#39;d like to be able to write code that looks like this:</p>
+
+<pre>
+<code>var btn1 = new Button(...);
+btn1.draw();
+
+mouseClicked = function() {
+  if (btn1.isMouseInside()) {
+     println(&quot;Whoah, you clicked me!&quot;);
+  }
+}
+</code></pre>
+
+<p>Let&#39;s contrast that to the code we wrote in the last article:</p>
+
+<pre>
+<code>var btn1 = {...};
+drawButton(btn1);
+
+mouseClicked = function() {
+  if (isMouseInside(btn1)) {
+     println(&quot;Whoah, you clicked me!&quot;);
+  }
+}
+</code></pre>
+
+<p>It&#39;s very similar, isn&#39;t it? But there&#39;s a big difference -- all the functions are defined on the <code>Button</code> object type, they actually belong to the buttons. There&#39;s a tighter coupling of properties and behavior, and that tends to lead to cleaner and more reusable code.</p>
+
+<p>To define the <code>Button</code> object type, we need to start with the constructor: the special function that takes in configuration parameters and sets the initial properties of the object instance.</p>
+
+<p>As a first attempt, here&#39;s a constructor that takes in x, y, width, and height:</p>
+
+<pre>
+<code>var Button = function(x, y, width, height) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+};
+
+
+var btn1 = new Button(100, 100, 150, 150);
+</code></pre>
+
+<p>That certainly works, but I have another approach I&#39;d like to recommend. Instead of taking in individual parameters, the constructor could take in a configuration object.</p>
+
+<pre>
+<code>var Button = function(config) {
+    this.x = config.x;
+    this.y = config.y;
+    this.width = config.width;
+    this.height = config.height;
+    this.label = config.label;
+};</code></pre>
+
+<p>The advantage of the config object is that we can keep adding more parameters for the constructor to handle (like <code>label</code>), and it&#39;s still easy for us to understand what each parameter does when we construct a button:</p>
+
+<pre>
+<code>var btn1 = new Button({
+&nbsp;   x: 100, y: 100,
+&nbsp;   width: 150, height: 50,
+&nbsp;   label: &quot;Please click!&quot;});
+</code></pre>
+
+<p>But we can go a step farther than that. What if most buttons will be the same width or height? We shouldn&#39;t have to keep specifying the width and height parameters for every button, we should only have to specify them when necessary. We can have the constructor check if the property is actually defined in the config object, and set a default value if not. Like so:</p>
+
+<pre>
+<code>var Button = function(config) {
+    this.x = config.x || 0;
+    this.y = config.y || 0;
+    this.width = config.width || 150;
+    this.height = config.height || 50;
+    this.label = config.label || &quot;Click&quot;;
+};</code></pre>
+
+<p>Now we can just call it with a subset of the properties, because the other ones will be set to the default value:</p>
+
+<pre>
+<code>var btn1 = new Button({x: 100, y: 100, label: &quot;Please click!&quot;});
+</code></pre>
+
+<p>All that work for a constructor, ay? But, it&#39;ll be worth it, I swear.</p>
+
+<p>Now that we have the constructor squared away (buttoned away?), let&#39;s define a bit of behavior: the <code>draw</code> method. It&#39;ll be the same code as the <code>drawButton</code> function, but it will grab all the properties from <code>this</code>, since it&#39;s defined on the object prototype itself:</p>
+
+<pre>
+<code>Button.prototype.draw = function() {
+    fill(0, 234, 255);
+    <strong>rect(this.x, this.y, this.width, this.height, 5);</strong>
+    fill(0, 0, 0);
+    textSize(19);
+    textAlign(LEFT, TOP);
+    <strong>text(this.label, this.x+10, this.y+this.height/4);</strong>
+};</code></pre>
+
+<p>Once that&#39;s defined, we can call it like so:</p>
+
+<pre>
+<code>btn1.draw();</code></pre>
+
+<p>Here&#39;s a program that uses that <code>Button</code> object to create 2 buttons - notice how easy it is to create and draw multiple buttons:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/object-oriented-button-no-click-handling/6639978627465216/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>We skipped the hard part, however: handling clicks. We can start by defining a function on the <code>Button</code> prototype that will report true if the user clicked inside a particular button&#39;s bounding box. Once again, this is just like our function from before, but it grabs all the properties from <code>this</code> instead of a passed in object:</p>
+
+<pre>
+<code>Button.prototype.isMouseInside = function() {
+    return mouseX &gt; this.x &amp;&amp;
+           mouseX &lt; (this.x + this.width) &amp;&amp;
+           mouseY &gt; this.y &amp;&amp;
+           mouseY &lt; (this.y + this.height);
+};</code></pre>
+
+<p>Now we can use that from inside a <code>mouseClicked</code> function:</p>
+
+<pre>
+<code>mouseClicked = function() {
+    if (<strong>btn1.isMouseInside()</strong>) {
+        println(&quot;You made the right choice!&quot;);
+    } else if (<strong>btn2.isMouseInside()</strong>) {
+        println(&quot;Yay, you picked me!&quot;);
+    }
+};</code></pre>
+
+<p>Try it out below, clicking each of the buttons:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/object-oriented-button-with-click-handling/4987422608195584/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>But, there&#39;s something that irks me about the way we&#39;ve set up that click handling. The whole point of object oriented programming is to bundle up all the behavior related to an object inside the object, and to use properties to customize behavior. But, we&#39;ve left some of the behavior dangling outside the object, the <code>println</code>s inside <code>mouseClicked</code>:</p>
+
+<pre>
+<code>mouseClicked = function() {
+    if (btn1.isMouseInside()) {
+        <strong>println(&quot;You made the right choice!&quot;);</strong>
+    } else if (btn2.isMouseInside()) {
+        <strong>println(&quot;Yay, you picked me!&quot;);</strong>
+    }
+};</code></pre>
+
+<p>Those print statements should be better tied to each button somehow, like as something that we pass into the constructor. Just looking at it the way it is now, we could decide to pass a message into the constructor config, and define a <code>handleMouseClick</code> function to print it out:</p>
+
+<pre>
+<code>var Button = function(config) {
+    ...
+    <strong>this.message = config.message || &quot;Clicked!&quot;;</strong>
+};
+
+Button.prototype.handleMouseClick = function() {
+    if (this.isMouseInside()) {
+         println(this.message);
+    }
+};
+
+var btn1 = new Button({
+    x: 100,
+    y: 100,
+    label: &quot;Please click!&quot;,
+    <strong>message: &quot;You made the right choice!&quot;</strong>
+});
+
+mouseClicked = function() {
+   <strong>btn1.handleMouseClick();</strong>
+};</code></pre>
+
+<p>That&#39;s much nicer, since now everything associated with the each button&#39;s particular behavior is wrapped up in the constructor. But it&#39;s also overly simple. What if we wanted to do something besides printing a message, like draw a few shapes or change scenes, something that would take a few lines of code? In that case, we&#39;d want to provide the constructor with more than just a string-- we actually want to provide it with a bunch of code. How can we pass around a bunch of code?</p>
+
+<p>...With a function! In JavaScript (but not all languages), we can pass functions as parameters to functions. That&#39;s useful in many situations, but particularly useful when defining behavior for UI controls like buttons. We can tell the button, &quot;hey, here&#39;s this function, it&#39;s a bunch of code that I want you to call when the user clicks the button.&quot; We refer to those functions as <strong><em>&quot;callback&quot;</em></strong> functions because they won&#39;t be called immediately, they&#39;ll be &quot;called back&quot; at an appropriate time later.</p>
+
+<p>We can start by passing&nbsp;an&nbsp;<code>onClick</code> parameter that&#39;s a function:</p>
+
+<pre>
+<code>var btn1 = new Button({
+    x: 100,
+    y: 100,
+    label: &quot;Please click!&quot;,
+    <strong>onClick: function() {
+       text(&quot;You made the right choice!&quot;, 100, 300);
+    }</strong>
+});</code></pre>
+
+<p>We then have to make sure our constructor sets an <code>onClick</code> property according to what&#39;s passed in. For the default, in case there&#39;s no <code>onClick</code> passed in, we&#39;ll just create a &quot;no-op&quot; function -- a function that does &quot;no operations&quot; at all. It&#39;s just there so that we can call it and not experience an error:</p>
+
+<pre>
+<code>var Button = function(config) {
+    // ...
+    <strong>this.onClick = config.onClick || function() {};</strong>
+};</code></pre>
+
+<p>Finally, we need to actually call back the callback function once the user clicks the button. That&#39;s actually pretty simple- we can just call it by&nbsp;writing the property name we saved it into and following that with empty parantheses:</p>
+
+<pre>
+<code>Button.prototype.handleMouseClick = function() {
+    if (this.isMouseInside()) {
+        <strong>this.onClick();</strong>
+    }
+};</code></pre>
+
+<p>And now we&#39;re done - we have a <code>Button</code> object that we can easily create new buttons out of, making each button look different and responding differently to click events. Click around on the example below, and see what happens when you change button parameters:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/object-oriented-button-with-click-handling-callback/6395457306099712/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>Now that you have that as a template, you could customize your buttons in other ways, like different colors, or have them respond to other events, like mouseover. Try it out in your programs!</p>
