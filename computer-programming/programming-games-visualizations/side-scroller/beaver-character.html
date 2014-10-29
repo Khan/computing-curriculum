@@ -1,0 +1,30 @@
+<!-- khanid:xaf3db80f --> 
+ <p>Let&#39;s start by making our character, the hopping beaver. We&#39;ll use object-oriented design, discussed in <a href="https://www.khanacademy.org/cs/creature-hoppy-beaver/6495673899810816">this tutorial</a>, to describe our Beaver character.</p>
+
+<p>When creating a game character, we should think about what properties and behaviors it should have. For example, our beaver should keep track of her <strong>x</strong> and <strong>y</strong> position and how many <strong>sticks</strong> she has collected. She also needs two behaviors: <strong>hop</strong>, which makes her jump a little bit up, and <strong>fall</strong>, which makes her fall a bit down.</p>
+
+<p>Here&#39;s what that could look like, as an object:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/creature-hoppy-beaver/6495673899810816/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>That program doesn&#39;t do a very good job at checking the different behaviors, though - it&#39;s not animated, so we can only see her in one state of being. Let&#39;s add a <code>draw</code> function, so that we can tell the beaver to do different things depending on user interaction. For this game, we want the beaver to hop whenever the user is pressing the space key. That can be implemented pretty simply:</p>
+
+<pre>
+<code>draw = function() {
+    background(255, 255, 255);
+    if (keyIsPressed &amp;&amp; keyCode === 0) {
+        beaver.hop();
+    } else {
+        beaver.fall();
+    }
+    beaver.draw();
+};</code></pre>
+
+<p>That&#39;s pretty effective code, but if we ran it, we&#39;d have to continuously press our space bar to keep the beaver from hopping off the face of the canvas forever, never to return. We should constrain the y values to some reasonable value, to keep the beaver in screen. That&#39;s common in games, to keep characters inside the &quot;game world.&quot; We could do that by using <a href="https://www.khanacademy.org/cs/constrainvalue-min-max/5870136103796736"><code>constrain</code></a> in the draw function, passing it an appropriate min and max:</p>
+
+<pre>
+<code> this.y = constrain(this.y, 0, height-50);</code></pre>
+
+<p>Now, here&#39;s our program, with a keyboard-controlled hopping and falling beaver. Play around with it a bit!</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/hoppy-beaver-with-keyboard-interaction/5624028028993536/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
