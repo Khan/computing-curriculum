@@ -1,0 +1,41 @@
+<!-- khanid:x82ab0265 --> 
+ <p>In addition to moving the grid, you can also rotate it with the <code>rotate()</code> function. This function takes one argument, which is the number of <strong><em>degrees</em></strong> that you want to rotate.</p>
+
+<p>In the version of ProcessingJS that we use on Khan Academy, all of the functions that have to do with rotation default to measuring angles in degrees, but they can also be configured to measure angles in radians, the standard unit of angular measure. If you want to use radians instead, you can set <code>angleMode = &quot;radians&quot;;</code> at the top of your program.</p>
+
+<p>When we talk about angles in degrees, we say that a full circle has 360&deg;. When we talk about angles in radians, we say that a full circle has 2&pi; radians. Here&#39;s a diagram to remind you of the degrees and radians in a circle:</p>
+
+<p><span class="block-image image-wrapper"><img alt="" src="https://ka-perseus-images.s3.amazonaws.com/9c89954c87bce74c163acd1a07238e9fc4125464.png" /></span></p>
+
+<div class="callout">
+<p>Want to review or learn angular measurements? You can go through our <a href="https://www.khanacademy.org/math/geometry/parallel-and-perpendicular-lines/Angle_basics/v/measuring-angles-in-degrees">&quot;Angle basics and measurement&quot;</a> here on Khan Academy.</p>
+</div>
+
+<p>Let&#39;s try something simple: rotating a square 45 degrees:</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/rotated-rectangle/4909122855108608/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>Hey, what happened? How come the square got moved and cut off? The answer is: the square did not move. The grid was rotated. Here is what really happened. As you can see, on the rotated coordinate system, the square still has its upper left corner at (40, 40).</p>
+
+<p><span class="block-image image-wrapper"><img alt="" src="https://ka-perseus-images.s3.amazonaws.com/8af2c8a1bd1c24046343650acd85d3099ee0dbf9.png" /></span></p>
+
+<h3>Rotating the correct way</h3>
+
+<p>The correct way to rotate the square is to:</p>
+
+<ul>
+	<li>Translate the coordinate system&rsquo;s origin (0, 0) to where you want the upper left of the square to be.</li>
+	<li>Rotate the grid 45&deg; (&pi;/4 radians)</li>
+	<li>Draw the square at the origin.</li>
+</ul>
+
+<p><span class="block-image image-wrapper"><img alt="" src="https://ka-perseus-images.s3.amazonaws.com/d5300f83009aa9c29bda1471f39ddf4bcbec2ae3.png" /></span></p>
+
+<p>Here&#39;s the rotated square program, done the correct way. Notice the difference in the code: this program does <code>translate(40, 40);</code> and then <code>rect(<strong>0, 0,</strong>&nbsp;40, 40);</code> in place of just <code>rect(<strong>40, 40,</strong> 40, 40);</code>.</p>
+
+<p><iframe class="scratchpad" frameborder="0" height="440" scrolling="no" src="https://www.khanacademy.org/cs/rotated-rectangle-with-transformations/4800078854750208/embedded?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes" width="790"></iframe></p>
+
+<p>&nbsp;</p>
+
+<hr />
+<p>This article is an adaptation of <a href="http://www.processing.org/tutorials/transform2d/">2D Transformations</a> by J David Eisenberg, used under a <a href="http://creativecommons.org/licenses/by-nc-sa/2.0/">Creative Commons Attribution-NonCommercial-ShareAlike</a> License.</p>
