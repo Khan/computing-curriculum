@@ -1,13 +1,57 @@
-<p>Before we jump into building our first slider, let's take a look at the one below and think about what we would need to do to create something similar in Processing.js.</p>
+<p>
+	Before we jump into building our first slider, let's take a look at the one below 
+	and think about what we would need to do to create something similar in ProcessingJS.
+</p>
 
 <input type="range" min="0" max="50" value="10">
 
-<p>Let's break it down into several simpler steps.</p>
+<p>
+	For our most basic slider, we can start with these simple steps.
+</p>
 
 <ol>
-	<li>Draw a long thin rectangle for the track of the slider.</li>
+	<li>Draw a long, thin rectangle for the track of the slider.</li>
 	<li>Draw the circle handle on top of the track</li>
-	<li>Have the handle follow the mouse along the track when it is clicked and dragged.</li>
+	<li>Make the handle move along the track when a user clicks and drags it.</li>
 </ol>
 
+<p>
+	For steps #1 and #2, we can simply write:
+</p>
+
+<pre><code>
+	// draw the track
+	fill(180);
+	strokeWeight(0.5);
+	rect(150, 200, 100, 5, 10);
+
+	// draw circular handle
+	fill(235);
+	ellipse(150, 203, 15, 15);
+</code></pre>
+
+<p>
+	That was easy!  All we needed to do was draw a rectangle and circle. However, did you notice the mysterious
+	fifth value we passed into <code>rect(x, y, w, h)</code>? 
+</p>
+
+<pre><code>
+	rect(150, 200, 100, 5, 10);
+</code></pre>
+
+<p>
+	If you look at the <a href="https://www.khanacademy.org/computer-programming/rectx-y-w-h/839496660" target="_blank">documentation</a> 
+	for <code>rect(x, y, w, h)</code>, you will see it has an optional (and somewhat hidden) parameter called 
+	<code>radius</code> which sets the radius of the corners of the rectangle when rounding them. It does not
+	normally appear in the list of parameters in <code>rect(x, y, w, h)</code> because it is not a requirement to run the function.
+</p>
+
+<p>
+	With steps #1 and #2 out of the way, we are ready to get into the fun stuff.  But wait!  Right now this
+	code is very difficult to understand with all those confusing "hardcoded" numbers. Also, if we want to
+	change anything about the slider like its position or the its width, we will have to change values
+	in several places and have trouble knowing which value mean what.  For now, let's create variables for
+	the slider position, width, height, and handle diameter: <code>sliderX</code>, <code>sliderY</code>, 
+	<code>sliderWidth</code>, <code>sliderHeight</code>, and <code>handleDiam</code>.
+</p>
 
