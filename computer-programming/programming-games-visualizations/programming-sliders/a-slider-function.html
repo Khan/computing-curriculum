@@ -1,12 +1,12 @@
 <p>
-	Before we jump into building our first slider, let's take a look at the one below 
-	and think about what we would need to do to create something similar in ProcessingJS.
+Before we jump into building our first slider, let's take a look at this HTML slider 
+and think about what we would need to do to create something similar in ProcessingJS.
 </p>
 
 <input type="range" min="0" max="50" value="10">
 
 <p>
-	For our most basic slider, we can start with these simple steps.
+	We can start with these simple steps:
 </p>
 
 <ol>
@@ -23,7 +23,7 @@
 	// draw the track
 	fill(180);
 	strokeWeight(0.5);
-	rect(150, 200, 100, 5, 10);
+	rect(150, 200, 100, 6, 10);
 
 	// draw circular handle
 	fill(235);
@@ -40,34 +40,24 @@ fifth value we passed into <code>rect(x, y, w, h)</code>?
 </code></pre>
 
 <p>
-If you take a look at the <a href="https://www.khanacademy.org/computer-programming/rectx-y-w-h/839496660" target="_blank">documentation</a> 
-for <code>rect(x, y, w, h)</code>, you will see it has an optional (and somewhat hidden) parameter called 
-<code>radius</code> which sets the radius of the corners of the rectangle when rounding them. It does not
-normally appear in the list of parameters in <code>rect(x, y, w, h)</code> because it is not a requirement to run the function.
+If you take a look at the <a href="https://www.khanacademy.org/computer-programming/rectx-y-w-h/839496660" 
+target="_blank">documentation</a> for <code>rect(x, y, w, h)</code>, 
+you will see it has an optional (and somewhat hidden) parameter called <code>radius</code> 
+which sets the radius of the corners of the rectangle when rounding them. 
+It does not appear in the list of parameters in <code>rect(x, y, w, h)</code> because it is not a requirement 
+to run the function.
 </p>
 
 <p>
-With steps #1 and #2 out of the way, we are ready to get into the fun stuff.  But wait!  Right now this
-code is very difficult to understand with all those confusing "hardcoded" numbers. Also, if we want to
-change anything about the slider like its position or the its width, we will have to change values
-in several places and have trouble knowing which value mean what.  For now, let's create variables for
-the slider position, width, height, and handle diameter: <code>sliderX</code>, <code>sliderY</code>, 
-<code>sliderWidth</code>, <code>sliderHeight</code>, and <code>handleDiam</code>.
+With steps #1 and #2 out of the way, we are ready to get into the fun stuff.  But wait!  
+Right now this code is very difficult to understand with all those confusing "hardcoded" numbers. 
+By looking at that code, it is really hard to determine which number relates to the slider's 
+position or width.  Also, if we want to change anything about the slider like its position or its width, 
+we will have to change values in several places and will have difficulties determining which 
+number relates to which part of the slider. 
+This can easily be changed by replacing the numbers with variables for the slider position, width, height, 
+and handle diameter: <code>sliderX</code>, <code>sliderY</code>, <code>sliderWidth</code>, 
+<code>sliderHeight</code>, and <code>handleDiam</code>.
 </p>
 
-<pre><code>
-	var sliderX = 150;
-	var sliderY = 200;
-	var sliderWidth = 100;
-	var sliderHeight = 5;
-	var handleDiam = 15;
-
-	// draw the track
-	fill(180);
-	strokeWeight(0.5);
-	rect(sliderX, sliderY, sliderWidth, sliderHeight, 10);
-
-	// draw circular handle
-	fill(235);
-	ellipse(sliderX, sliderY+sliderHeight/2, handleDiam, handleDiam);
-</code></pre>
+<script src="http://www.khanacademy.org/computer-programming/slider-introduce-variables/5611864926191616/embed.js?embed=yes&amp;article=yes&amp;editor=yes&amp;buttons=yes&amp;author=yes"></script>
