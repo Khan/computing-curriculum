@@ -31,8 +31,8 @@
 </code></pre>
 
 <p>
-	That was easy!  All we needed to do was draw a rectangle and circle. However, did you notice the mysterious
-	fifth value we passed into <code>rect(x, y, w, h)</code>? 
+That was easy!  All we needed to do was draw a rectangle and circle. However, did you notice the mysterious
+fifth value we passed into <code>rect(x, y, w, h)</code>? 
 </p>
 
 <pre><code>
@@ -40,18 +40,34 @@
 </code></pre>
 
 <p>
-	If you look at the <a href="https://www.khanacademy.org/computer-programming/rectx-y-w-h/839496660" target="_blank">documentation</a> 
-	for <code>rect(x, y, w, h)</code>, you will see it has an optional (and somewhat hidden) parameter called 
-	<code>radius</code> which sets the radius of the corners of the rectangle when rounding them. It does not
-	normally appear in the list of parameters in <code>rect(x, y, w, h)</code> because it is not a requirement to run the function.
+If you take a look at the <a href="https://www.khanacademy.org/computer-programming/rectx-y-w-h/839496660" target="_blank">documentation</a> 
+for <code>rect(x, y, w, h)</code>, you will see it has an optional (and somewhat hidden) parameter called 
+<code>radius</code> which sets the radius of the corners of the rectangle when rounding them. It does not
+normally appear in the list of parameters in <code>rect(x, y, w, h)</code> because it is not a requirement to run the function.
 </p>
 
 <p>
-	With steps #1 and #2 out of the way, we are ready to get into the fun stuff.  But wait!  Right now this
-	code is very difficult to understand with all those confusing "hardcoded" numbers. Also, if we want to
-	change anything about the slider like its position or the its width, we will have to change values
-	in several places and have trouble knowing which value mean what.  For now, let's create variables for
-	the slider position, width, height, and handle diameter: <code>sliderX</code>, <code>sliderY</code>, 
-	<code>sliderWidth</code>, <code>sliderHeight</code>, and <code>handleDiam</code>.
+With steps #1 and #2 out of the way, we are ready to get into the fun stuff.  But wait!  Right now this
+code is very difficult to understand with all those confusing "hardcoded" numbers. Also, if we want to
+change anything about the slider like its position or the its width, we will have to change values
+in several places and have trouble knowing which value mean what.  For now, let's create variables for
+the slider position, width, height, and handle diameter: <code>sliderX</code>, <code>sliderY</code>, 
+<code>sliderWidth</code>, <code>sliderHeight</code>, and <code>handleDiam</code>.
 </p>
 
+<pre><code>
+	var sliderX = 150;
+	var sliderY = 200;
+	var sliderWidth = 100;
+	var sliderHeight = 5;
+	var handleDiam = 15;
+
+	// draw the track
+	fill(180);
+	strokeWeight(0.5);
+	rect(sliderX, sliderY, sliderWidth, sliderHeight, 10);
+
+	// draw circular handle
+	fill(235);
+	ellipse(sliderX, sliderY+sliderHeight/2, handleDiam, handleDiam);
+</code></pre>
